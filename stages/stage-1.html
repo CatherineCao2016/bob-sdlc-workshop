@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 1 - Bob Builds the App | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .output-icon {
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  .substeps {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .substeps li {
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+
+  /* SCREENSHOT PLACEHOLDER */
+  .screenshot {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 26px 20px;
+    margin: 14px 0;
+    text-align: center;
+  }
+
+  .screenshot-icon {
+    font-size: 26px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.55;
+  }
+
+  .screenshot-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .screenshot-caption {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* VIDEO PLACEHOLDER */
+  .video-ph {
+    border: 2px dashed var(--accent);
+    border-radius: 8px;
+    background: rgba(0,102,204,0.04);
+    padding: 26px 20px;
+    margin: 12px 0 4px;
+    text-align: center;
+  }
+
+  .video-ph-icon {
+    font-size: 30px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .video-ph-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .video-ph-caption {
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 1 of 8</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-list">
+        <li class="toc-item">
+          <a href="../index.html" class="toc-link">
+            <span class="toc-num">00</span>
+            <span class="toc-label">Workshop Intro</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1.html" class="toc-link active">
+            <span class="toc-num">01</span>
+            <span class="toc-label">Bob Builds the App</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1a.html" class="toc-link">
+            <span class="toc-num">01a</span>
+            <span class="toc-label">Java Modernization</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2.html" class="toc-link">
+            <span class="toc-num">02</span>
+            <span class="toc-label">Generate Tests</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2b.html" class="toc-link">
+            <span class="toc-num">02b</span>
+            <span class="toc-label">Security Scanning</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-3.html" class="toc-link">
+            <span class="toc-num">03</span>
+            <span class="toc-label">Infra as Code</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4.html" class="toc-link">
+            <span class="toc-num">04</span>
+            <span class="toc-label">Deploy to OpenShift</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4b.html" class="toc-link">
+            <span class="toc-num">04b</span>
+            <span class="toc-label">CI/CD Pipeline</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-5.html" class="toc-link">
+            <span class="toc-num">05</span>
+            <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="container">
+      <div class="stage-header">
+      <div class="stage-badge">Lab 01 · Build</div>
+      <div class="stage-title">Bob Builds the App</div>
+      <div class="stage-desc">One prompt → full deployable payment app</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li>An <strong>IBMid</strong>. If you don't have one, sign up for a free trial at <a href="https://bob.ibm.com/trial" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">bob.ibm.com/trial</a>.</li>
+        <li>The <strong>Bob IDE</strong> downloaded and installed. Get it at <a href="https://bob.ibm.com/download" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">bob.ibm.com/download</a>.</li>
+        <li>A <strong>JDK (17 or later)</strong> and <strong>Maven 3.6+</strong> installed and on your PATH. Verify with <code>java -version</code> and <code>mvn -version</code>. You do not need to install Spring Boot; Maven downloads it automatically on first build.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li><strong>IBM Bob</strong> is an AI agent for the full software development lifecycle. It can plan, build, test, secure, and deploy applications from natural-language prompts.</li>
+        <li>The <strong>Bob IDE</strong> is what you will work with in this lab: a fork of VS Code, fully customized for the agentic coding experience, so everything you already know about VS Code still applies, with Bob built in as a chat-driven coding agent.</li>
+        <li>We're building a mock credit card payment app: backend, frontend, all in one prompt.</li>
+        <li>Notice how detailed the spec is: endpoints, card numbers, response codes, UI states. This is <strong><a href="https://youtu.be/mViFYTwWvcM?si=bqMla6OvU8x0-AWZ" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">specs-driven development</a></strong>: putting the important technical details on paper upfront so Bob has everything it needs to deliver exactly what's expected. No back-and-forth, no misaligned deliverables.</li>
+      </ul>
+    </div>
+
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">📝</span>
+        <span class="note-label">Notes</span>
+      </div>
+      In this lab we build the app in <strong>Java 11</strong>, so we can reuse the same app for the Java modernization lab. If you'd rather skip that, you can ask Bob directly for <strong>Java 17</strong> (or any other version). You can also find the finished app here: <a href="#" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">Java 17 version</a> · <a href="#" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">Java 11 version</a>.
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Set up the project and build prompt</div>
+        <div class="step-body">
+          Bob is built on VS Code, so the editor works exactly the same way. We'll create a project, write the build prompt as a Markdown file inside it, then hand that file to Bob.
+          <ol class="substeps">
+            <li><strong>Create a project.</strong> Open Bob and choose <strong>File → Open Folder…</strong> (or <strong>Open…</strong> from the Welcome screen). Pick an empty folder for your app, or create a new one first. This folder is your workspace.
+              <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+                <source src="../assets/videos/create-project.mp4" type="video/mp4">
+                Your browser doesn't support embedded video. <a href="../assets/videos/create-project.mp4">Download the clip</a>.
+              </video>
+            </li>
+            <li><strong>Sign in.</strong> Open the Bob chat panel and sign in with your IBMid (first time only).
+              <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+                <source src="../assets/videos/sign-in.mp4" type="video/mp4">
+                Your browser doesn't support embedded video. <a href="../assets/videos/sign-in.mp4">Download the clip</a>.
+              </video>
+            </li>
+            <li><strong>Add the build prompt as a file.</strong> In the Explorer panel, hover your folder and click <strong>New File</strong>, name it <code>build-prompt.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+        <div class="step-body" style="margin-top:14px;">
+          <strong>Build prompt</strong>: paste this into <code>build-prompt.md</code>:
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Build Prompt</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt()">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="promptText">Build a mock credit card payment processing application with:
+
+Backend (Java 11, Spring Boot):
+- REST API endpoints:
+  - POST /api/payments/authorize (authorize a card transaction)
+  - POST /api/payments/capture (capture an authorized transaction)
+  - POST /api/payments/refund (refund a captured transaction)
+  - GET /api/payments/{id} (get transaction status)
+  - GET /api/payments/history (list recent transactions)
+  - POST /admin/cache/clear (clear local cache)
+  - GET /actuator/health (readiness probe)
+  - GET /actuator/prometheus (metrics endpoint)
+
+- Use in-memory H2 database (no external DB needed)
+- Local Caffeine cache for transaction lookups
+- Simulate realistic processing delays (200-500ms)
+- Simulate random declines (10% of transactions)
+- Return realistic response codes (approved, declined, insufficient funds, expired card)
+- Use the test card numbers:
+  - Visa: 4263970000005262
+  - MasterCard: 5425230000004415
+  - Amex: 374101000000608
+
+Frontend (React):
+- Payment form: card number, expiry, CVV, amount
+- Transaction history dashboard showing recent payments
+- Status badges: Authorized (yellow), Captured (green), Declined (red), Refunded (gray)
+- Simple and clean. This is for a demo, not production
+
+Make it run with a single command: mvn spring-boot:run
+
+Do not run the application. I will run it myself.
+
+Also generate:
+- Dockerfile: multi-stage build, distroless base, non-root user
+- k8s/deployment.yaml: OpenShift deployment manifest with placeholder values:
+  - Image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/payment-app:${IMAGE_TAG}
+    # in-cluster pull path. At deploy time: ${NAMESPACE} → bob-demo-staging (or bob-demo-prod),
+    # ${IMAGE_TAG} → git SHA. The CI job pushes the same image via the external route ($OPENSHIFT_REGISTRY).
+  - Namespace: ${NAMESPACE}   # bob-demo-staging | bob-demo-prod
+  - 3 replicas, resource limits, readiness/liveness probes
+  - PodDisruptionBudget (max 1 unavailable)
+  - Service and Route
+  Use placeholder values only; real cluster values will be injected at deploy time.
+
+Use the following folder structure:
+```
+payment-app-java11/
+├── src/
+│   └── main/
+│       ├── java/com/demo/payment/
+│       │   ├── controller/
+│       │   ├── service/
+│       │   ├── model/
+│       │   └── config/
+│       └── resources/
+│           ├── static/          ← React frontend
+│           └── application.properties
+├── pom.xml
+├── Dockerfile
+├── k8s/
+│   └── deployment.yaml   ← OpenShift manifest with placeholder values
+└── README.md
+```</div>
+        </div>
+              <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+                <source src="../assets/videos/add-build-prompt.mp4" type="video/mp4">
+                Your browser doesn't support embedded video. <a href="../assets/videos/add-build-prompt.mp4">Download the clip</a>.
+              </video>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, then add <code>build-prompt.md</code> as context by typing <code>@</code> in the chat box. A menu pops up: select <strong>Add File</strong>, then select <code>build-prompt.md</code>, and send the message. The spec already tells Bob what to build, so it gets to work right away.
+              <div class="stage-tip" style="margin-top:12px;">
+                <div class="tip-header">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-label">Feature Spotlight · Context Mentions</span>
+                </div>
+                The <code>@</code> symbol triggers <strong>context mentions</strong>, a quick way to point Bob at specific parts of your project (files, folders, terminal, and more) so it has exactly the context it needs. See the <a href="https://bob.ibm.com/docs/ide/features/context-mentions" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">context mentions docs</a> for everything you can reference.
+              </div>
+              <div class="stage-tip" style="margin-top:12px;">
+                <div class="tip-header">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-label">Feature Spotlight · Modes</span>
+                </div>
+                Bob works in <strong>modes</strong>, personas tuned for different kinds of work. The built-in modes are <strong>Code</strong> (writing and modifying code), <strong>Ask</strong> (explanations and code analysis without making changes), <strong>Plan</strong> (architecture and technical plans before implementation), <strong>Advanced</strong> (full tool access for complex workflows), and <strong>Orchestrator</strong> (coordinating multi-step projects across modes). We use <strong>Code</strong> mode here since we want Bob to build. You can switch modes from the dropdown in the chat panel; see the <a href="https://bob.ibm.com/docs/ide/features/modes" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">modes docs</a> for details. You can also create your own <a href="https://bob.ibm.com/docs/ide/configuration/custom-modes" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">custom modes</a> tailored to your team's workflows.
+              </div>
+              <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+                <source src="../assets/videos/hand-to-bob.mp4" type="video/mp4">
+                Your browser doesn't support embedded video. <a href="../assets/videos/hand-to-bob.mp4">Download the clip</a>.
+              </video>
+            </li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Review Bob's build plan and let it build the app</div>
+        <div class="step-body">
+          Before writing any code, Bob produces a detailed to-do list, the full build plan: project structure, data models, API controllers, service layer, database and cache, frontend, Dockerfile, and Kubernetes manifests. Depending on your <strong>allowed actions</strong> settings, Bob may pause and ask for approval before creating files or running commands, so you stay in control the whole time.<br><br>
+          Approve the steps and let Bob work through the plan.
+        </div>
+        <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+          <source src="../assets/videos/bob-plan-and-build.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. <a href="../assets/videos/bob-plan-and-build.mp4">Download the clip</a>.
+        </video>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Review what Bob delivered</div>
+        <div class="step-body">
+          When it finishes, Bob writes a <code>README.md</code> describing everything it implemented and gives you a clear handoff message with what to do next. Notice Bob didn't only build the app; it also generated the <strong>Dockerfile</strong> and the <strong>OpenShift deployment manifest</strong> in <code>k8s/deployment.yaml</code>. One prompt, and you have everything needed to containerize and deploy.
+        </div>
+        <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+          <source src="../assets/videos/review-output.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. <a href="../assets/videos/review-output.mp4">Download the clip</a>.
+        </video>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Run the application</div>
+        <div class="step-body">
+          In a terminal, run:<br><br><code>cd payment-app-java11 &amp;&amp; mvn spring-boot:run</code><br><br>Maven compiles the project, then starts the Spring Boot application with its embedded Tomcat server, wiring up the H2 database, cache, and REST controllers. When you see <em>"Started PaymentApplication"</em>, the app is live on <code>localhost:8080</code>.
+        </div>
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          If the app fails to start, Spring Boot prints a clear error explaining what went wrong, and you can hand that error to Bob to fix it.
+        </div>
+
+        <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+          <source src="../assets/videos/run-app-in-terminal.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. <a href="../assets/videos/run-app-in-terminal.mp4">Download the clip</a>.
+        </video>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <div class="step-title">Try it in the browser</div>
+        <div class="step-body">
+          Open <code>localhost:8080</code> and fill in the payment form:<br><br>
+          • <strong>Card Number:</strong> use a test card, e.g. Visa <code>4263970000005262</code><br>
+          • <strong>Expiry:</strong> any future date, e.g. <code>12/26</code><br>
+          • <strong>CVV:</strong> any 3-digit number, e.g. <code>123</code><br>
+          • <strong>Amount:</strong> any value, e.g. <code>99.99</code><br><br>
+          Hit <strong>Authorize</strong> and watch the transaction appear in the history dashboard. The outcome will be one of <strong>Authorized</strong> (yellow), <strong>Captured</strong> (green), <strong>Declined</strong> (red), or <strong>Refunded</strong> (gray), with a ~10% chance of a decline to simulate real-world behavior. This confirms the UI is talking to the backend: Bob generated a <em>working</em> application, not just code.
+        </div>
+        <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+          <source src="../assets/videos/test-ui.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. <a href="../assets/videos/test-ui.mp4">Download the clip</a>.
+        </video>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>You gave Bob a <strong>single detailed spec prompt</strong> and watched it plan the work before writing a line of code, with you approving each step along the way.</li>
+        <li>Bob built a <strong>complete payment application</strong>: Spring Boot REST backend, H2 database, cache, and a working frontend with a transaction dashboard.</li>
+        <li>Bob also delivered everything around the code: a <strong>README</strong>, a <strong>Dockerfile</strong>, and an <strong>OpenShift deployment manifest</strong>, so the app is ready to containerize and deploy in later labs.</li>
+        <li>You <strong>ran the app locally</strong> with Maven and <strong>verified it end-to-end</strong> in the browser: authorizing test payments and seeing transactions flow through Authorized, Captured, Declined, and Refunded states.</li>
+        <li>The takeaway: <strong>one well-written prompt produced a working, deployable application</strong>, not just code. The rest of the workshop builds on this app: testing, security scanning, infrastructure, deployment, and operations.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="../index.html" class="nav-btn">← Previous Lab</a>
+      <a href="stage-1a.html" class="nav-btn">Next: Lab 1a →</a>
+    </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('promptText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>

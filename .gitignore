@@ -1,0 +1,13 @@
+# OS junk
+.DS_Store
+
+# Labs not yet finalized: holding back until reviewed
+index.html              # Workshop intro
+stages/stage-3.html     # Infra as Code
+stages/stage-4.html     # Deploy to OpenShift
+stages/stage-4b.html    # CI/CD Pipeline
+stages/stage-5.html     # Day-2 SRE Ops
+
+# Not yet reviewed (uncomment to also hold back):
+# stages/stage-6.html   # Auto-Heal & Diagnose
+# stages/stage-7.html   # Backup Prompts

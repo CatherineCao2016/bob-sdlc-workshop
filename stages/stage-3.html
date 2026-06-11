@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 3 - Infra as Code | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  /* Original container styles below */
+  .old-container-placeholder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    flex: 1;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .stage-prep {
+    background: rgba(255,85,85,0.08);
+    border: 1px solid rgba(255,85,85,0.25);
+    border-left: 3px solid var(--red);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .output-icon {
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 3 of 8</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-list">
+        <li class="toc-item">
+          <a href="../index.html" class="toc-link">
+            <span class="toc-num">00</span>
+            <span class="toc-label">Workshop Intro</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1.html" class="toc-link">
+            <span class="toc-num">01</span>
+            <span class="toc-label">Bob Builds the App</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1a.html" class="toc-link">
+            <span class="toc-num">01a</span>
+            <span class="toc-label">Java Modernization</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2.html" class="toc-link">
+            <span class="toc-num">02</span>
+            <span class="toc-label">Generate Tests</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2b.html" class="toc-link">
+            <span class="toc-num">02b</span>
+            <span class="toc-label">Security Scanning</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-3.html" class="toc-link active">
+            <span class="toc-num">03</span>
+            <span class="toc-label">Infra as Code</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4.html" class="toc-link">
+            <span class="toc-num">04</span>
+            <span class="toc-label">Deploy to OpenShift</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4b.html" class="toc-link">
+            <span class="toc-num">04b</span>
+            <span class="toc-label">CI/CD Pipeline</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-5.html" class="toc-link">
+            <span class="toc-num">05</span>
+            <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 03 · IaC</div>
+      <div class="stage-title">Infra as Code</div>
+      <div class="stage-desc">Generate Terraform and Ansible to provision and configure the OpenShift environment</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Lab 1a completed</strong>, so you have the <code>payment-app-java17</code> project open in the Bob IDE.</li>
+        <li><strong>No OpenShift cluster is needed yet.</strong> In this lab Bob only generates the infrastructure files; you will deploy in Lab 4.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li>Before anything can be deployed, the infrastructure needs to exist. Instead of clicking through a console or running ad-hoc scripts, we'll ask Bob to generate the infrastructure as code: repeatable, version-controlled, and auditable.</li>
+        <li>We'll use <strong>Terraform</strong> to provision the OpenShift namespace and resources, and <strong>Ansible</strong> to configure the environment: applying policies, setting up service accounts, and preparing the namespace for the payment app.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob to diagram the IaC flow</div>
+        <div class="step-body">
+          Before we generate the infrastructure files, let's ask Bob to visualize the full IaC flow, so you can see how Terraform, Ansible, and the deployment pipeline connect. In the Bob chat panel, send the prompt below.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 3a · IaC Architecture Diagram</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt0">Generate a Mermaid diagram showing the full infrastructure and deployment flow for the payment application.
+
+Note: Mermaid does not support `\n` inside node labels; use `<br/>` for line breaks within labels.
+
+Cluster: single OpenShift cluster with 3 worker nodes, 4 vCPU and 16 GB RAM each.
+Two namespaces: bob-demo-staging and bob-demo-prod.
+Image registry: OpenShift internal image registry (image-registry.openshift-image-registry.svc:5000).
+
+The diagram should show:
+
+Infrastructure layer (Terraform):
+- Both namespaces on the same cluster
+- Per namespace: ResourceQuota, NetworkPolicy, ServiceAccount
+- Per namespace: PostgreSQL Deployment + ClusterIP Service (port 5432, internal only) + PersistentVolumeClaim (5Gi)
+- NetworkPolicy rules: payment-service → postgres-service on port 5432 allowed, all other ingress/egress denied by default
+
+Configuration layer (Ansible):
+- PostgreSQL credentials Secret injected per namespace
+- ConfigMap for app configuration
+- PostgreSQL readiness wait before pre-flight health check
+
+CI/CD and deployment flow:
+- CI builds image → pushes to OpenShift internal registry under bob-demo-staging
+- CD auto-deploys payment-service to bob-demo-staging → connects to postgres-service in same namespace
+- Image promoted via oc tag within internal registry to bob-demo-prod
+- Manual approval gates production deployment
+- payment-service in bob-demo-prod connects to its own postgres-service
+
+Output the diagram as a .md file: payment-app-java17/infra/IaCArchitecture.md
+
+Once the file is saved, display the Mermaid diagram directly in the chat so we can see it immediately.</div>
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          Bob generates files only in this lab; we're not executing them live. But the output is production-ready and can be committed to the repo alongside the application code.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Review the architecture diagram</div>
+        <div class="step-body">
+          Bob saves <code>payment-app-java17/infra/IaCArchitecture.md</code> and renders the Mermaid diagram in the chat. Read it layer by layer: <strong>Terraform</strong> (namespaces, quotas, network policies, PostgreSQL + PVC), <strong>Ansible</strong> (credentials, config, readiness checks), and the <strong>CI/CD flow</strong> (build → staging → oc tag → prod).
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          If you work in infra or platform engineering, look closely here; the Terraform structure, the NetworkPolicy rules, and the PVC setup follow patterns you'll recognize immediately.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Generate the Terraform configuration</div>
+        <div class="step-body">
+          Now ask Bob to turn the diagram into a complete Terraform workspace: namespaces, quotas, network policies, RBAC, a PostgreSQL instance per namespace, plus the GitHub Actions secrets the CI/CD pipeline will need later. Send the prompt below.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 3b · Terraform: Full Infrastructure + GitHub Secrets</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt1">Based on the IaC architecture diagram in payment-app-java17/infra/IaCArchitecture.md, generate a complete Terraform configuration to provision the OpenShift environment and GitHub Actions secrets for the payment application.
+
+## Infrastructure Overview
+
+**Cluster**: Single OpenShift cluster with 3 worker nodes, each with 4 vCPU and 16 GB RAM (12 vCPU / 48 GB RAM total)
+
+**Namespaces**: bob-demo-staging and bob-demo-prod
+
+## Output Files
+
+All files under payment-app-java17/infra/terraform/:
+
+### 1. provider.tf: Provider configuration
+- Kubernetes/OpenShift provider (hashicorp/kubernetes ~> 2.27)
+- GitHub provider (integrations/github ~> 6.0)
+- Null provider for local-exec provisioners
+
+### 2. variables.tf: Input variables
+- OpenShift: cluster URL, token
+- GitHub: token, owner, repository
+- Namespaces: staging/prod names (defaults: bob-demo-staging, bob-demo-prod)
+- ResourceQuota settings
+- PostgreSQL configuration
+- All sensitive values with no defaults (must be supplied via TF_VAR_* at runtime)
+
+### 3. main.tf: OpenShift infrastructure
+
+Provision for **each namespace** (staging and prod):
+
+- **Namespace** with labels and annotations
+- **ResourceQuota**:
+  - requests.cpu: 4, limits.cpu: 8
+  - requests.memory: 8Gi, limits.memory: 16Gi
+- **NetworkPolicy**:
+  - Default-deny all ingress/egress
+  - Allow ingress to payment-service from within namespace only
+  - Allow payment-service to connect to postgres-service on port 5432
+- **ServiceAccount**: payment-service-sa with least-privilege RBAC (Role + RoleBinding)
+- **PostgreSQL** (separate instance per namespace, no sharing):
+  - PersistentVolumeClaim: 5Gi storage
+  - Deployment: postgres:15, single replica, resource limits (1 CPU, 2Gi memory)
+  - Service: postgres-service on port 5432 (ClusterIP, internal only)
+
+### 4. github-secrets.tf: GitHub Actions secrets
+
+Provision five secrets for CI/CD pipeline:
+- OPENSHIFT_SERVER: OpenShift cluster API URL
+- OPENSHIFT_TOKEN: Service account token for authentication
+- OPENSHIFT_REGISTRY: Internal registry URL (from: oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}')
+- NAMESPACE_STAGING: bob-demo-staging
+- NAMESPACE_PROD: bob-demo-prod
+
+All values read from environment variables (TF_VAR_* prefix).
+
+### 5. outputs.tf: Output values
+- Namespace names (staging/prod)
+- Cluster endpoint
+- PostgreSQL service endpoints (staging/prod)
+- PostgreSQL ClusterIPs
+- ServiceAccount names
+- PVC names
+- GitHub secrets status (optional)
+
+### 6. .env.example: Environment variable template
+
+Document all required TF_VAR_* variables with descriptions:
+- TF_VAR_cluster_url: OpenShift API server URL
+- TF_VAR_cluster_token: Service account token
+- TF_VAR_github_token: GitHub PAT with repo scope
+- TF_VAR_github_owner: GitHub organization or user
+- TF_VAR_github_repository: Repository name
+- TF_VAR_openshift_server: OpenShift cluster API URL (for GitHub secrets)
+- TF_VAR_openshift_token: Service account token (for GitHub secrets)
+- TF_VAR_openshift_registry: Internal registry URL
+
+## Requirements
+
+- Use placeholder values for all sensitive data; supplied via environment variables at runtime
+- No hardcoded secrets in .tf files
+- Separate PostgreSQL instance per namespace (no sharing between staging and prod)
+- Single Terraform workspace manages both OpenShift infrastructure and GitHub secrets
+- Do not apply or run any Terraform commands</div>
+        </div>
+
+        <div class="step-body" style="margin-top:12px;">
+          When Bob finishes, notice the <strong>six files</strong>. This is the complete infrastructure story in one Terraform workspace: namespaces, quotas, network policies, RBAC, PostgreSQL per namespace, and GitHub Actions secrets all wired up together. Note the <code>.env.example</code>: anyone onboarding to this repo knows exactly what they need to supply before running <code>terraform apply</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Generate the Ansible playbook</div>
+        <div class="step-body">
+          Ansible handles the configuration layer: PostgreSQL credentials, config maps, and pre-flight checks. Everything the app needs injected at runtime, wired up before the first deploy. Send the prompt below.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 3c · Ansible: Configure the Environment</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt2">Based on the IaC architecture diagram in payment-app-java17/infra/IaCArchitecture.md, generate an Ansible playbook to configure the OpenShift environment after Terraform provisioning.
+
+Single cluster, two namespaces: bob-demo-staging and bob-demo-prod.
+Each namespace has its own PostgreSQL instance provisioned by Terraform.
+
+Output all files under payment-app-java17/infra/ansible/:
+1. playbook.yml: main playbook targeting both namespaces
+2. inventory/hosts.yml: single OpenShift cluster inventory
+3. roles/payment-app/tasks/main.yml: configuration tasks for each namespace:
+   - Create Kubernetes Secret for PostgreSQL credentials:
+     DB_URL: jdbc:postgresql://postgres-service:5432/paymentdb
+     DB_USER: payment_user
+     DB_PASSWORD: <placeholder>
+   - Create ConfigMap for application configuration
+   - Verify service account permissions
+   - Wait for PostgreSQL pod to be ready before proceeding
+   - Run a pre-flight health check to confirm namespace is ready for deployment
+
+Note: No image pull secret needed; OpenShift internal registry automatically grants pull access to the default service account within the same namespace.
+Use placeholder values for all credentials.
+Do not run the playbook.</div>
+        </div>
+
+        <div class="step-body" style="margin-top:12px;">
+          Two things worth highlighting in the result: the <strong>PostgreSQL readiness wait</strong> (Ansible won't proceed until the database pod is actually ready, preventing the app from starting with no DB to connect to) and the <strong>pre-flight health check</strong> (the namespace must pass before the CI/CD pipeline is ever allowed to deploy into it).
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          You don't have to run all three prompts; pick the one most relevant to you. Working in infra? Focus on the Terraform. Ops-focused? Start with Ansible. Short on time? The diagram alone tells the full story.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <div class="step-title">Review what Bob delivered</div>
+        <div class="step-body">
+          Open the <code>payment-app-java17/infra/</code> folder and confirm everything is in place:
+        </div>
+        <div class="output-list" style="margin-top:12px;">
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/terraform/main.tf: namespaces, quotas, network policies, RBAC, PostgreSQL + PVC per namespace</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/terraform/provider.tf, variables.tf, outputs.tf</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/terraform/github-secrets.tf: GitHub Actions secrets</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/terraform/.env.example: required TF_VAR_* variables</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/ansible/playbook.yml: PostgreSQL credentials, configmaps, readiness wait, pre-flight check</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/ansible/inventory/hosts.yml</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app-java17/infra/ansible/roles/payment-app/tasks/main.yml</div>
+        </div>
+
+        <div class="stage-prep">
+          <strong>Cluster setup for the next lab:</strong> to deploy to a live OpenShift cluster, use any Red Hat OpenShift environment you have access to. A cluster with <strong>3 worker nodes</strong>, each with <strong>4 vCPU and 16 GB RAM</strong> (100 GB ephemeral storage), <strong>12 vCPU and 48 GB RAM</strong> total, comfortably runs this workshop.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>Bob generated a <strong>Mermaid architecture diagram</strong> of the full IaC and deployment flow, so you could see how Terraform, Ansible, and the CI/CD pipeline connect before writing a single file.</li>
+        <li>Bob produced a <strong>complete Terraform workspace</strong>: staging and prod namespaces, resource quotas, default-deny network policies, least-privilege RBAC, a PostgreSQL instance per namespace, and GitHub Actions secrets, with no hardcoded credentials.</li>
+        <li>Bob generated an <strong>Ansible configuration layer</strong>: database credentials Secret, app ConfigMap, a PostgreSQL readiness wait, and a pre-flight health check.</li>
+        <li>All of it is <strong>version-controlled code</strong>, ready to commit to the repo alongside the application.</li>
+        <li>The takeaway: <strong>Terraform provisions the infrastructure, Ansible configures it, and the CI/CD pipeline deploys into it</strong>. Bob generated all three.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="stage-2b.html" class="nav-btn">← Previous Lab</a>
+      <a href="stage-4.html" class="nav-btn">Next: Lab 4 →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>

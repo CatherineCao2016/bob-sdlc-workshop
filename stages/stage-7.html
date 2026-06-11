@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 7 - Backup Prompts | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  
+  .stage-header {
+    margin-bottom: 30px;
+  }
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+  }
+  .prompt-body.visible {
+    display: block;
+  }
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 7 - Backup</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Backup · Q&A</div>
+      <div class="stage-title">Backup Prompts</div>
+      <div class="stage-desc">Resource optimization, DR readiness, MCP integration vision</div>
+    </div>
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Earlier labs completed</strong>, so the payment app is deployed in the <code>bob-demo</code> namespace and you have the Bob IDE open.</li>
+        <li>These prompts are <strong>optional extras</strong> for Q&amp;A or spare time; each one stands alone, so run them in any order.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      We went from zero to a production-deployed, security-scanned, pipeline-automated application with automated Day-2 operations, in 10 minutes. Everything I did by typing prompts? In production, this runs automatically through Bob's CLI in your CI pipeline. The intelligence is the same. The human is optional.
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Try the resource optimization prompt</div>
+        <div class="step-body">
+          Send the prompt below to have Bob review resource requests and limits across the <code>bob-demo</code> deployments. It flags over-provisioned and under-provisioned pods and recommends right-sized values based on actual usage.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt · Resource Optimization</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt0">Analyze resource requests and limits for all deployments in bob-demo.
+Identify pods that are over-provisioned (using <50% of requested CPU/memory)
+and under-provisioned (hitting limits). Recommend right-sized values
+based on actual usage over the last 24 hours.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Try the DR readiness prompt</div>
+        <div class="step-body">
+          This prompt asks Bob to audit disaster recovery readiness for the namespace: GitOps coverage, secret replication, PVC backups, and config drift between clusters. It finishes by generating a DR runbook for <code>payment-service</code>.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt · DR Readiness</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt1">Validate disaster recovery readiness for the bob-demo namespace.
+Check: are all deployments backed by Git (GitOps)?
+Are secrets replicated? Are PVCs backed up?
+Is there config drift between primary and DR clusters?
+Generate a DR runbook for payment-service.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Try the MCP integration vision prompt</div>
+        <div class="step-body">
+          Use this one when the discussion turns to "how does Bob fit our existing toolchain?" It asks Bob to design an MCP server configuration that wraps Wiz, GitHub, Vault, and ArgoCD, and to show how it would call those tools autonomously in a security gate workflow.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt · MCP Integration Vision</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt2">Design an MCP server configuration that wraps our existing tools:
+- Wiz API for security scanning
+- GitHub API for PR management
+- HashiCorp Vault for secrets
+- ArgoCD for deployment status
+Show how Bob would call these tools autonomously during
+a security gate workflow without human intervention.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Close with the summary report prompt</div>
+        <div class="step-body">
+          A strong way to end the session: ask Bob to recap everything the workshop produced, with a risk assessment and recommended next steps. Bob writes the wrap-up for you.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt · Closing Summary</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt3')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt3">Generate a summary report of everything we did today.
+Show: what was built, what was scanned, what was fixed,
+what was deployed, and what was automated.
+Include a risk assessment and recommendations for next steps.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>You explored a set of <strong>optional backup prompts</strong> that extend the workshop into new territory; none of them are required, and each stands alone.</li>
+        <li><strong>Resource optimization</strong>: Bob right-sized CPU and memory requests based on actual usage.</li>
+        <li><strong>DR readiness</strong>: Bob audited GitOps coverage, secrets, backups, and config drift, and generated a DR runbook.</li>
+        <li><strong>MCP integration vision</strong>: Bob designed how it would wrap your existing tools (Wiz, GitHub, Vault, ArgoCD) and drive them autonomously.</li>
+        <li>The takeaway: <strong>the same prompt-driven intelligence covers the whole lifecycle</strong>, from building the app to optimizing, protecting, and reporting on it in production.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="stage-6.html" class="nav-btn">← Previous Lab</a>
+      <a href="../index.html" class="nav-btn">Back to Index</a>
+    </div>
+  </div>
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>

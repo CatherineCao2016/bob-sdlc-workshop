@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 5 - Day-2 SRE Ops | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  /* Original container styles below */
+  .old-container-placeholder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    flex: 1;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 5 of 8</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-list">
+        <li class="toc-item">
+          <a href="../index.html" class="toc-link">
+            <span class="toc-num">00</span>
+            <span class="toc-label">Workshop Intro</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1.html" class="toc-link">
+            <span class="toc-num">01</span>
+            <span class="toc-label">Bob Builds the App</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-1a.html" class="toc-link">
+            <span class="toc-num">01a</span>
+            <span class="toc-label">Java Modernization</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2.html" class="toc-link">
+            <span class="toc-num">02</span>
+            <span class="toc-label">Generate Tests</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-2b.html" class="toc-link">
+            <span class="toc-num">02b</span>
+            <span class="toc-label">Security Scanning</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-3.html" class="toc-link">
+            <span class="toc-num">03</span>
+            <span class="toc-label">Infra as Code</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4.html" class="toc-link">
+            <span class="toc-num">04</span>
+            <span class="toc-label">Deploy to OpenShift</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-4b.html" class="toc-link">
+            <span class="toc-num">04b</span>
+            <span class="toc-label">CI/CD Pipeline</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stage-5.html" class="toc-link active">
+            <span class="toc-num">05</span>
+            <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 05 · Operations</div>
+      <div class="stage-title">Day-2 SRE Ops</div>
+      <div class="stage-desc">RefreshPOD, rolling restart, cache, certs, Vault onboarding</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Lab 4 completed</strong>, so <code>payment-app</code> is running in the <code>bob-demo-staging</code> namespace on OpenShift.</li>
+        <li>A <strong>terminal session</strong> where you can log in to your OpenShift cluster and launch BobShell with the <code>bob</code> command.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      Day-2 operations usually depend on tribal knowledge: knowing the right oc commands, flags, sequencing, and safety checks. At 2am, that becomes risk.<br><br>With Bob, operations become intent-driven. Instead of remembering commands, you describe what you need to accomplish.<br><br>Bob doesn't just run the command; it watches the result, validates it, and tells you if something went wrong.<br><br>It removes cognitive overhead and makes safe production operations accessible to everyone.
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Launch BobShell from the terminal</div>
+        <div class="step-body">
+          Try BobShell yourself, directly from the terminal. From a terminal session:<br><br>
+          1. Log in to your OpenShift cluster.<br>
+          2. Type <code>bob</code> to launch BobShell.<br>
+          3. Paste any of the prompts in the steps below and watch how Bob executes Day-2 operational tasks in real time.<br><br>
+          It's a simple way to see how routine SRE activities, such as pod refresh, rolling restarts, cache invalidation, certificate rotation, or Vault onboarding, can be handled conversationally without switching tools or manually stitching together commands.
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          You don't have to run all of these; running one or two is enough to see the capability.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Refresh the pods</div>
+        <div class="step-body">
+          Send the prompt below in BobShell. Bob deletes the <code>payment-app</code> pods one at a time, waits for each replacement to pass readiness checks, and reports status after each pod. This is a controlled pod refresh, not a blunt restart.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5a · RefreshPOD</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt0">Refresh the pods for payment-app in bob-demo-staging namespace.
+Delete pods one at a time with a 30-second grace period.
+Wait for each replacement pod to pass readiness checks
+before deleting the next one. Report status after each pod. Use oc commands.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Perform a rolling restart</div>
+        <div class="step-body">
+          Send the next prompt. Bob runs <code>oc rollout restart</code>, monitors the rollout, and confirms zero downtime by checking the PodDisruptionBudget and pod availability throughout.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5b · Rolling Restart</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt1">Perform a rolling restart of payment-app in bob-demo-staging namespace.
+Use oc rollout restart. Monitor the rollout status.
+Confirm zero downtime by checking that the PodDisruptionBudget
+is respected and at least 2 pods are available at all times.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Clear the application cache</div>
+        <div class="step-body">
+          Send the cache refresh prompt. Bob calls the <code>/admin/cache/clear</code> endpoint on every pod, reports the results in a table, and flags any pod that returns a non-200 response with suggested remediation.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5c · Cache Refresh</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt2">Clear the local cache on all payment-app pods in bob-demo-staging namespace.
+For each pod, call POST /admin/cache/clear endpoint (using the most appropriate
+method: exec, port-forward, or direct service access). Report the HTTP status code and response body from each pod in a table format.
+If any pod returns a non-200 response, flag it and suggest specific remediation steps.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <div class="step-title">Generate a certificate renewal script</div>
+        <div class="step-body">
+          Send the certificate renewal prompt. Bob generates a script that creates a new self-signed cert, validates it with openssl, updates the OpenShift TLS secret, triggers a rolling restart, and verifies the new cert is served on the Route. This prompt is marked <strong>[VALIDATION IN PROGRESS]</strong>; treat the output as a script to review rather than run blindly.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5d · Certificate Renewal · [VALIDATION IN PROGRESS]</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt3')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt3">The TLS certificate for payment-service-tls in bob-demo namespace
+is expiring in 7 days. Generate a renewal script that:
+1. Creates a new self-signed cert (RSA 2048, 365 day validity)
+2. Validates the new cert with openssl
+3. Updates the OpenShift TLS secret
+4. Triggers a rolling restart to pick up the new cert
+5. Verifies the new cert is served by checking the Route</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-number">6</div>
+      <div class="step-content">
+        <div class="step-title">Generate a Vault onboarding script</div>
+        <div class="step-body">
+          Send the Vault onboarding prompt. Bob generates a script that creates a scoped Vault path and policy for a new client, stores the generated secrets, binds the policy to the service account in OpenShift, and restarts the service. This prompt is also marked <strong>[VALIDATION IN PROGRESS]</strong>; review the script before running it.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5e · Vault Onboarding · [VALIDATION IN PROGRESS]</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt4')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt4">A new client "acme-corp" needs to be onboarded to our payment platform.
+Using HashiCorp Vault, generate the onboarding script that:
+1. Creates a Vault path: secret/clients/acme-corp/
+2. Generates and stores: API key, DB password, encryption key
+3. Creates a Vault policy scoping read access to only acme-corp secrets
+4. Binds the policy to the payment-service service account in OpenShift
+5. Restarts payment-service to pick up the new Vault path</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>You launched <strong>BobShell</strong> from a plain terminal and drove live cluster operations conversationally.</li>
+        <li>You ran <strong>safe, intent-driven Day-2 tasks</strong>: pod refresh with readiness checks, a zero-downtime rolling restart, and a cache clear across all pods with per-pod status reporting.</li>
+        <li>You saw Bob generate <strong>operational scripts</strong> for TLS certificate renewal and HashiCorp Vault client onboarding.</li>
+        <li>In each case Bob didn't just run commands; it <strong>watched the result, validated it, and reported anomalies</strong>.</li>
+        <li>The takeaway: <strong>Day-2 operations become intent-driven</strong>, replacing tribal knowledge of oc commands with described outcomes that anyone on the team can execute safely.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="stage-4b.html" class="nav-btn">← Previous Lab</a>
+      <a href="../index.html" class="nav-btn">Back to Home →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>

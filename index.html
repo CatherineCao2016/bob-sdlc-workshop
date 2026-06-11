@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 0 - Workshop Intro | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<script src="assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --red: #ff5555;
+    --green: #50fa7b;
+    --text: #212529;
+    --muted: #495057;
+    --stage-colors: #4d94ff, #00d4aa, #a78bfa, #ffb347, #ff6b9d, #50fa7b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .flow-overview {
+    margin-bottom: 30px;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .flow-track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .flow-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--nc, #4d94ff);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    min-width: 110px;
+    position: relative;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--nc, #4d94ff) 15%, transparent);
+    transition: box-shadow 0.2s;
+  }
+
+  .flow-bubble:hover {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--nc, #4d94ff) 35%, transparent);
+  }
+
+  .flow-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--nc, #4d94ff);
+    margin-bottom: 3px;
+  }
+
+  .flow-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+    white-space: nowrap;
+  }
+
+  .flow-sub {
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .flow-arrow {
+    font-size: 16px;
+    color: var(--border);
+    padding: 0 6px;
+    margin-top: -10px;
+  }
+
+  .kv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .kv-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .kv-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .kv-key {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .setup-note {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #000000;
+  }
+
+  .setup-note strong {
+    color: var(--warn);
+  }
+
+  .setup-icon {
+    font-size: 16px;
+  }
+
+  .tip {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #000000;
+    margin-top: 15px;
+  }
+
+  .tip strong {
+    color: var(--accent2);
+  }
+
+  .tip-icon {
+    font-size: 16px;
+  }
+
+  /* NAVIGATION */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .nav-btn:disabled:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 0 of 8</span>
+      <a href="index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-list">
+        <li class="toc-item">
+          <a href="index.html" class="toc-link active">
+            <span class="toc-num">00</span>
+            <span class="toc-label">Workshop Intro</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-1.html" class="toc-link">
+            <span class="toc-num">01</span>
+            <span class="toc-label">Bob Builds the App</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-1a.html" class="toc-link">
+            <span class="toc-num">01a</span>
+            <span class="toc-label">Java Modernization</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-2.html" class="toc-link">
+            <span class="toc-num">02</span>
+            <span class="toc-label">Generate Tests</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-2b.html" class="toc-link">
+            <span class="toc-num">02b</span>
+            <span class="toc-label">Security Scanning</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-3.html" class="toc-link">
+            <span class="toc-num">03</span>
+            <span class="toc-label">Infra as Code</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-4.html" class="toc-link">
+            <span class="toc-num">04</span>
+            <span class="toc-label">Deploy to OpenShift</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-4b.html" class="toc-link">
+            <span class="toc-num">04b</span>
+            <span class="toc-label">CI/CD Pipeline</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="stages/stage-5.html" class="toc-link">
+            <span class="toc-num">05</span>
+            <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="container">
+      <div class="stage-header">
+      <div class="stage-badge">Lab 00 · Intro</div>
+      <div class="stage-title">Workshop Intro</div>
+      <div class="stage-desc">Full SDLC overview: what Bob does, and why it matters</div>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      This workshop walks through the complete software delivery lifecycle (SDLC) using IBM Bob, from building a payment processing application in a single prompt, through security scanning, CI/CD pipeline generation, and OpenShift deployment, to the Day-2 SRE operations that drive daily operational toil. Bob drives every stage intelligently, generating production-ready artifacts that can be executed immediately against live OpenShift clusters.
+    </div>
+
+    <div class="section-label">Visual Lab Overview</div>
+    <div class="flow-overview">
+      <div class="flow-track">
+        <div class="flow-node" style="--nc:#4d94ff">
+          <div class="flow-bubble">
+            <div class="flow-num">01</div>
+            <div class="flow-label">Build App</div>
+            <div class="flow-sub">One prompt → full payment app</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#00d4aa">
+          <div class="flow-bubble">
+            <div class="flow-num">02</div>
+            <div class="flow-label">Generate Tests</div>
+            <div class="flow-sub">Full test suite · Edge cases</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#a78bfa">
+          <div class="flow-bubble">
+            <div class="flow-num">02b</div>
+            <div class="flow-label">Security Scan</div>
+            <div class="flow-sub">Secrets · CVE · Context analysis</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#ffb347">
+          <div class="flow-bubble">
+            <div class="flow-num">03</div>
+            <div class="flow-label">Infra as Code</div>
+            <div class="flow-sub">Terraform · Ansible</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#ff6b9d">
+          <div class="flow-bubble">
+            <div class="flow-num">04</div>
+            <div class="flow-label">Deploy</div>
+            <div class="flow-sub">Manual deploy to OpenShift</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#50fa7b">
+          <div class="flow-bubble">
+            <div class="flow-num">04b</div>
+            <div class="flow-label">CI/CD Pipeline</div>
+            <div class="flow-sub">GitHub Actions · Auto-deploy</div>
+          </div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-node" style="--nc:#4d94ff">
+          <div class="flow-bubble">
+            <div class="flow-num">05</div>
+            <div class="flow-label">Day-2 SRE Ops</div>
+            <div class="flow-sub">RefreshPOD · Cache · Certs · Vault</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kv-grid">
+        <div class="kv-card">
+          <div class="kv-val">7 labs</div>
+          <div class="kv-key">pick and choose</div>
+        </div>
+        <div class="kv-card">
+          <div class="kv-val">Java 11→17</div>
+          <div class="kv-key">Spring Boot</div>
+        </div>
+        <div class="kv-card">
+          <div class="kv-val">OpenShift</div>
+          <div class="kv-key">Target Platform</div>
+        </div>
+        <div class="kv-card">
+          <div class="kv-val">Full SDLC</div>
+          <div class="kv-key">Coverage</div>
+        </div>
+        <div class="kv-card">
+          <div class="kv-val">0 → Prod</div>
+          <div class="kv-key">What Bob Does</div>
+        </div>
+      </div>
+
+      <div class="setup-note">
+        <span class="setup-icon">⚙</span>
+        <strong>Prerequisites:</strong> Bob IDE + BobShell on your laptop · access to a Red Hat OpenShift cluster (sandbox, managed, or self-provisioned)
+      </div>
+
+      <div class="tip">
+        <span class="tip-icon">💡</span>
+        <strong>Tip:</strong> This workshop uses GitHub Actions and OpenShift, but Bob speaks Jenkins, GitLab CI, Azure DevOps, Tekton, EKS, AKS, and more. The intelligence is the same regardless of the tooling.
+      </div>
+    </div>
+
+    <div class="section-label">Detailed Pipeline Breakdown</div>
+    <div style="background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03)); border: 1px solid rgba(0,102,204,0.2); border-radius: 6px; padding: 16px; margin-bottom: 30px;">
+      <p style="margin-bottom: 12px; color: var(--text); font-size: 13px; line-height: 1.6;">
+        View the full pipeline breakdown, what you'll build in this workshop:
+      </p>
+      <a href="bob-demo-sdlc-cards.html" style="display: inline-block; padding: 10px 18px; background: var(--accent); color: white; text-decoration: none; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; transition: background 0.2s;">
+        View Full Pipeline Breakdown →
+      </a>
+    </div>
+
+      <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">← Back to Index</a>
+        <a href="stages/stage-1.html" class="nav-btn">Next: Lab 1 →</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

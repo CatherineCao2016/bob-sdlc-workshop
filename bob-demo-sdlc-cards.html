@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<script src="assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --card-bg: #FFFFFF;
+    --text-primary: #212529;
+    --text-secondary: #525252;
+    --text-muted: #6c757d;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --stage1-accent: #0F62FE; --stage1-bg: #EDF5FF; --stage1-tag: #D0E2FF;
+    --stage2-accent: #198038; --stage2-bg: #DEFBE6; --stage2-tag: #A7F0BA;
+    --stage3-accent: #B28600; --stage3-bg: #FFF8E1; --stage3-tag: #FFECB3;
+    --stage4-accent: #0072C3; --stage4-bg: #E5F6FF; --stage4-tag: #BAE6FF;
+    --stage5-accent: #6929C4; --stage5-bg: #F6F2FF; --stage5-tag: #E8DAFF;
+    --stage6-accent: #9F1853; --stage6-bg: #FFF0F7; --stage6-tag: #FFD6E8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Navigation Header ---- */
+  .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+
+  .content {
+    flex: 1;
+    padding: 40px 24px 60px;
+  }
+
+  /* ---- Header ---- */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--stage1-accent); margin-bottom: 12px;
+  }
+  .header-label .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--stage1-accent); animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  .header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .header p {
+    font-size: 15px; color: var(--text-secondary);
+    max-width: 720px; margin: 0 auto; line-height: 1.5;
+  }
+  .header .subtitle {
+    display: inline-block; margin-top: 16px; padding: 6px 16px;
+    background: var(--text-primary); color: white; border-radius: 20px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500;
+  }
+
+  /* ---- Pipeline Row ---- */
+  .pipeline {
+    display: flex; align-items: stretch; gap: 0;
+    justify-content: center;
+    overflow-x: auto; padding: 8px 0 32px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .pipeline::-webkit-scrollbar { height: 6px; }
+  .pipeline::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
+  .pipeline::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+
+  /* ---- Connector Arrow ---- */
+  .connector {
+    display: flex; align-items: center; flex-shrink: 0;
+    width: 32px; justify-content: center;
+  }
+  .connector svg { width: 24px; height: 24px; color: var(--text-muted); flex-shrink: 0; }
+
+  /* ---- Lab Cards ---- */
+  .stage-card {
+    flex-shrink: 0; width: 260px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--card-bg);
+    display: flex; flex-direction: column; scroll-snap-align: start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden;
+    text-decoration: none; color: inherit; cursor: pointer;
+  }
+  .stage-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .card-top { padding: 20px 20px 0; }
+  .stage-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stage-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .card-title {
+    font-size: 17px; font-weight: 700; line-height: 1.3;
+    margin-bottom: 14px; letter-spacing: -0.2px;
+  }
+  .card-body { padding: 0 20px; flex: 1; }
+  .card-body ul { list-style: none; padding: 0; }
+  .card-body li {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+    padding: 3px 0; padding-left: 16px; position: relative;
+  }
+  .card-body li::before {
+    content: '›'; position: absolute; left: 0;
+    font-weight: 700; font-size: 15px;
+  }
+  .card-quote {
+    margin: 16px 20px; padding: 10px 14px; border-radius: 8px;
+    font-size: 12.5px; font-style: italic; line-height: 1.5; font-weight: 500;
+  }
+  .card-tags {
+    padding: 14px 20px 18px; display: flex; flex-wrap: wrap;
+    gap: 6px; margin-top: auto;
+  }
+  .tag {
+    padding: 3px 10px; border-radius: 20px; font-size: 11px;
+    font-weight: 600; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.3px;
+  }
+
+  /* ---- Per-stage theming ---- */
+  .stage-1 .stage-label { color: var(--stage1-accent); }
+  .stage-1 .stage-icon  { background: var(--stage1-bg); }
+  .stage-1 .card-body li::before { color: var(--stage1-accent); }
+  .stage-1 .card-quote  { background: var(--stage1-bg); color: var(--stage1-accent); }
+  .stage-1 .tag          { background: var(--stage1-tag); color: var(--stage1-accent); }
+
+  .stage-2 .stage-label { color: var(--stage2-accent); }
+  .stage-2 .stage-icon  { background: var(--stage2-bg); }
+  .stage-2 .card-body li::before { color: var(--stage2-accent); }
+  .stage-2 .card-quote  { background: var(--stage2-bg); color: var(--stage2-accent); }
+  .stage-2 .tag          { background: var(--stage2-tag); color: var(--stage2-accent); }
+
+  .stage-3 .stage-label { color: var(--stage3-accent); }
+  .stage-3 .stage-icon  { background: var(--stage3-bg); }
+  .stage-3 .card-body li::before { color: var(--stage3-accent); }
+  .stage-3 .card-quote  { background: var(--stage3-bg); color: var(--stage3-accent); }
+  .stage-3 .tag          { background: var(--stage3-tag); color: var(--stage3-accent); }
+
+  .stage-4 .stage-label { color: var(--stage4-accent); }
+  .stage-4 .stage-icon  { background: var(--stage4-bg); }
+  .stage-4 .card-body li::before { color: var(--stage4-accent); }
+  .stage-4 .card-quote  { background: var(--stage4-bg); color: var(--stage4-accent); }
+  .stage-4 .tag          { background: var(--stage4-tag); color: var(--stage4-accent); }
+
+  .stage-5 .stage-label { color: var(--stage5-accent); }
+  .stage-5 .stage-icon  { background: var(--stage5-bg); }
+  .stage-5 .card-body li::before { color: var(--stage5-accent); }
+  .stage-5 .card-quote  { background: var(--stage5-bg); color: var(--stage5-accent); }
+  .stage-5 .tag          { background: var(--stage5-tag); color: var(--stage5-accent); }
+
+  .stage-6 .stage-label { color: var(--stage6-accent); }
+  .stage-6 .stage-icon  { background: var(--stage6-bg); }
+  .stage-6 .card-body li::before { color: var(--stage6-accent); }
+  .stage-6 .card-quote  { background: var(--stage6-bg); color: var(--stage6-accent); }
+  .stage-6 .tag          { background: var(--stage6-tag); color: var(--stage6-accent); }
+
+  /* ---- Capabilities Bar ---- */
+  .capabilities-bar {
+    margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 0; background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden;
+  }
+  .capability {
+    flex: 1; min-width: 140px; padding: 18px 14px; text-align: center;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .capability:last-child { border-right: none; }
+  .capability-icon {
+    width: 28px; height: 28px; margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; opacity: 0.7;
+  }
+  .capability-label {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .capability-value {
+    font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px;
+  }
+
+  /* ---- SDLC context bar ---- */
+  .sdlc-bar {
+    margin-top: 24px; display: flex; align-items: center; justify-content: center;
+    gap: 4px; flex-wrap: wrap; padding: 12px 0;
+  }
+  .sdlc-step {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .sdlc-step.active {
+    color: var(--stage1-accent);
+    background: var(--stage1-bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .sdlc-arrow { color: var(--border); font-size: 14px; margin: 0 2px; }
+
+  /* ---- Page number ---- */
+  .page-num { text-align: right; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+  /* ---- Animations ---- */
+  .stage-card { opacity: 0; animation: cardIn 0.5s ease forwards; }
+  .stage-card:nth-child(1)  { animation-delay: 0.1s; }
+  .stage-card:nth-child(3)  { animation-delay: 0.2s; }
+  .stage-card:nth-child(5)  { animation-delay: 0.3s; }
+  .stage-card:nth-child(7)  { animation-delay: 0.4s; }
+  .stage-card:nth-child(9)  { animation-delay: 0.5s; }
+  .stage-card:nth-child(11) { animation-delay: 0.6s; }
+  .connector { opacity: 0; animation: fadeIn 0.3s ease forwards; }
+  .connector:nth-child(2)  { animation-delay: 0.15s; }
+  .connector:nth-child(4)  { animation-delay: 0.25s; }
+  .connector:nth-child(6)  { animation-delay: 0.35s; }
+  .connector:nth-child(8)  { animation-delay: 0.45s; }
+  .connector:nth-child(10) { animation-delay: 0.55s; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION HEADER ============ -->
+<div class="nav-header">
+  <div class="nav-logo">
+    <div class="logo-dot"></div>
+    IBM BOB — SDLC WORKSHOP
+  </div>
+  <div style="display: flex; gap: 20px;">
+    <a href="index.html" class="nav-link">← Back to Demo</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ============ HEADER ============ -->
+<div class="header">
+  <div class="header-label">
+    <span class="dot"></span>
+    IBM Bob — Full SDLC Demo Flow
+  </div>
+  <h1>From Prompt → Production → Day-2 Ops</h1>
+  <p>Bob builds the app, tests it, secures it, builds the CI/CD pipeline, deploys to any platform, and assists with Day-2 SRE operations.</p>
+  <div class="subtitle">Credit Card Payment Processing App (demo: OpenShift)</div>
+</div>
+
+<!-- ============ SDLC CONTEXT BAR ============ -->
+<div class="sdlc-bar">
+  <span class="sdlc-step active">Modernize &amp; Build</span>
+  <span class="sdlc-arrow">→</span>
+  <span class="sdlc-step active">Test & Secure</span>
+  <span class="sdlc-arrow">→</span>
+  <span class="sdlc-step active">Infra as Code</span>
+  <span class="sdlc-arrow">→</span>
+  <span class="sdlc-step active">Deploy</span>
+  <span class="sdlc-arrow">→</span>
+  <span class="sdlc-step active">CI/CD Pipeline</span>
+  <span class="sdlc-arrow">→</span>
+  <span class="sdlc-step active">Day-2 Ops</span>
+</div>
+
+<!-- ============ PIPELINE CARDS ============ -->
+<div class="pipeline">
+
+  <!-- STAGE 1: Modernize & Build the App -->
+  <a href="stages/stage-1.html" class="stage-card stage-1">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">🏗️</div> Lab 1</div>
+      <div class="card-title">Bob Modernizes &amp; Builds the App</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Analyze legacy codebase — flag deprecated APIs, identify migration blockers, recommend refactors</li>
+        <li>Backend API and business logic</li>
+        <li>Frontend with dashboard UI</li>
+        <li>Dockerfile (multi-stage, distroless, non-root)</li>
+        <li>Health endpoints, Prometheus metrics, cache endpoint</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Legacy codebase or greenfield — Bob modernizes the stack and builds the app end-to-end."</div>
+    <div class="card-tags">
+      <span class="tag">Java 11/17</span>
+      <span class="tag">Spring Boot</span>
+      <span class="tag">React/Thymeleaf</span>
+      <span class="tag">Dockerfile</span>
+    </div>
+  </a>
+
+  <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <!-- STAGE 2: Test & Security Gate -->
+  <a href="stages/stage-2.html" class="stage-card stage-2">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">🔒</div> Lab 2</div>
+      <div class="card-title">Bob Tests & Secures</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Generate full test suite covering happy paths, edge cases, failure scenarios</li>
+        <li>Security scanning — secrets, contextual analysis, CVE scan</li>
+        <li>CVE scan on pom.xml — prioritized by exploitability</li>
+        <li>SAST scan (Semgrep) — hardcoded secrets, injection risks</li>
+        <li>Auto-fixes critical CVEs and pushes fix</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Full test coverage and security scans — before the code leaves the laptop."</div>
+    <div class="card-tags">
+      <span class="tag">JUnit 5</span>
+      <span class="tag">Semgrep</span>
+      <span class="tag">CVE Scan</span>
+      <span class="tag">Wiz</span>
+    </div>
+  </a>
+
+  <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <!-- STAGE 3: Infra as Code -->
+  <a href="stages/stage-3.html" class="stage-card stage-3">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">⚙️</div> Lab 3</div>
+      <div class="card-title">Bob Generates Infra as Code</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Generate Terraform code to provision OpenShift environment</li>
+        <li>Generate Ansible playbooks to configure infrastructure</li>
+        <li>Network policies, storage provisioning, RBAC setup</li>
+        <li>Security group configurations and firewall rules</li>
+        <li>Cluster health checks and validation scripts</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Infrastructure defined as code — reproducible, version-controlled, and ready to deploy."</div>
+    <div class="card-tags">
+      <span class="tag">Terraform</span>
+      <span class="tag">Ansible</span>
+      <span class="tag">OpenShift</span>
+      <span class="tag">IaC</span>
+    </div>
+  </a>
+
+  <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <!-- STAGE 4: Deploy -->
+  <a href="stages/stage-4.html" class="stage-card stage-4">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">🚀</div> Lab 4</div>
+      <div class="card-title">Bob Deploys to<br>OpenShift</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Manual deploy to validate the cluster before automating with CI/CD</li>
+        <li>Image push to container registry</li>
+        <li>Kubernetes manifests for deployment and services</li>
+        <li>Health checks and readiness probes configured</li>
+        <li>Zero-downtime rollout capabilities</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Manual deploy validates the cluster is ready — then we automate everything with CI/CD."</div>
+    <div class="card-tags">
+      <span class="tag">OpenShift</span>
+      <span class="tag">Kubernetes</span>
+      <span class="tag">Container Registry</span>
+      <span class="tag">kubectl</span>
+    </div>
+  </a>
+
+  <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <!-- STAGE 5: CI/CD Pipeline -->
+  <a href="stages/stage-5.html" class="stage-card stage-5">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">⚙️</div> Lab 5</div>
+      <div class="card-title">Bob Builds the<br>CI/CD Pipeline</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Generate a GitHub Actions CI/CD pipeline — auto-deploy to staging, manual approval for prod</li>
+        <li>Pipeline: build → test → scan → deploy</li>
+        <li>Multi-language &amp; framework support</li>
+        <li>Security scans as quality gates</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Describe the pipeline once — Bob generates it for GitHub Actions, drift-free automation."</div>
+    <div class="card-tags">
+      <span class="tag">GitHub Actions</span>
+      <span class="tag">CI/CD</span>
+      <span class="tag">Auto-deploy</span>
+      <span class="tag">Quality Gates</span>
+    </div>
+  </a>
+
+  <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <!-- STAGE 6: Day-2 SRE Ops -->
+  <a href="stages/stage-6.html" class="stage-card stage-6">
+    <div class="card-top">
+      <div class="stage-label"><div class="stage-icon">🔧</div> Lab 6</div>
+      <div class="card-title">Bob Assists with<br>Day-2 SRE Ops</div>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>RefreshPOD — per service, graceful restarts</li>
+        <li>Rolling restart — zero downtime, PDB-aware</li>
+        <li>Cache refresh — hits /cache/clear on all pods</li>
+        <li>Certificate renewal &amp; compliance validation</li>
+        <li>Vault secret maintenance for client onboarding</li>
+      </ul>
+    </div>
+    <div class="card-quote">"Describe the operation — Bob drafts the runbook and executes with your approval."</div>
+    <div class="card-tags">
+      <span class="tag">oc CLI</span>
+      <span class="tag">Vault</span>
+      <span class="tag">Certs</span>
+    </div>
+  </a>
+
+
+</div>
+
+<!-- ============ CAPABILITIES BAR ============ -->
+<div class="capabilities-bar">
+  <div class="capability">
+    <div class="capability-icon">🏗️</div>
+    <div class="capability-label">Stack</div>
+    <div class="capability-value">Java 11/17 + Spring Boot</div>
+  </div>
+  <div class="capability">
+    <div class="capability-icon">🔒</div>
+    <div class="capability-label">Security</div>
+    <div class="capability-value">CVE + SAST + Certs</div>
+  </div>
+  <div class="capability">
+    <div class="capability-icon">⚙️</div>
+    <div class="capability-label">Pipeline</div>
+    <div class="capability-value">GitHub Actions · Jenkins · ArgoCD</div>
+  </div>
+  <div class="capability">
+    <div class="capability-icon">☁️</div>
+    <div class="capability-label">Platform</div>
+    <div class="capability-value">Any Platform (demo: OpenShift)</div>
+  </div>
+  <div class="capability">
+    <div class="capability-icon">🔧</div>
+    <div class="capability-label">Integrations</div>
+    <div class="capability-value">Wiz · Vault · ArgoCD</div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>
