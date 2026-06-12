@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 8 - Day-2 SRE Ops | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  /* Original container styles below */
+  .old-container-placeholder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    flex: 1;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 8 of 10</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar" data-toc></aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 8 · Operate</div>
+      <div class="stage-title">Day-2 SRE Ops</div>
+      <div class="stage-desc">Operate the running payment app on Day 2: health-check it, then scale it under load, all with Bob's help</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Lab 6 completed</strong>, so <code>payment-app</code> is deployed and running in your own <code>deploy-test-&lt;suffix&gt;</code> namespace, exposed via an edge (HTTPS) route on container port <code>8081</code>.</li>
+        <li>You are <strong>logged in via the <code>oc</code> CLI</strong> to the same cluster (<code>oc login --token=&lt;your-token&gt; --server=&lt;cluster_url&gt;</code>), and you know your assigned namespace suffix (for example <code>bob-1</code>).</li>
+        <li>You have the project open in the <strong>Bob IDE</strong>, so you can write a prompt as a Markdown file and hand it to Bob, exactly as in the earlier labs.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li>Shipping the app was Day 1. <strong>Day 2 is everything after</strong>: keeping it healthy, responding to load, and proving it stays available when you change it. That is the SRE half of the SDLC, and it never really ends.</li>
+        <li>Day-2 work usually depends on tribal knowledge: the right <code>oc</code> commands, the correct flags, the safe sequencing, and the checks that confirm nothing broke. With Bob, you describe the <strong>outcome you want</strong> and let it run the commands, watch the results, and report back.</li>
+        <li>In this lab you operate the app you deployed in Lab 6: produce a written <strong>health report</strong>, then <strong>scale the deployment out</strong> to handle load and, as a separate deliberate action, <strong>scale it back down</strong> to baseline, confirming it stays reachable the whole time. As before, you write each prompt as a Markdown file and hand it to Bob in Code mode.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob for a health check and a written report</div>
+        <div class="step-body">
+          Your first Day-2 task is to find out how the deployed app is actually doing. As in the earlier labs, write the prompt as a Markdown file in the workspace, then hand that file to Bob. The prompt asks Bob to inspect the running <code>payment-app</code> in your namespace, check it from several angles, and write the findings into a clear <code>health-report.md</code> with an overall status.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>health-check.md</code>, paste the prompt below into it, replace <code>&lt;suffix&gt;</code> with your assigned suffix (or let Bob ask you for it), and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · Health Check + Report</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt0">Before running anything, ask me for my namespace suffix and wait for my answer. Then use it wherever the namespace deploy-test-&lt;suffix&gt; is referenced.
+
+Perform a Day-2 health check on the deployed payment-app in namespace deploy-test-&lt;suffix&gt; and write the findings to a Markdown file named health-report.md in the workspace. The app is a stateless Spring Boot service listening on container port 8081, exposed via an edge (HTTPS) route named payment-app.
+
+Work out the right commands yourself and run them, do not invent flags. Check the app from these angles and capture what you find for each:
+
+1. Pod status, readiness, and restarts. Flag any pod that is not Running and Ready, and report each pod's restart count.
+
+2. Deployment rollout status, including desired vs available replicas.
+
+3. Service endpoints: confirm there is at least one ready endpoint on port 8081. An empty endpoints list means traffic cannot reach any pod.
+
+4. Route reachability over HTTPS: report the HTTP status code. Treat 2xx/3xx as reachable; flag anything else, especially a 503 "Application is not available".
+
+5. Recent logs scanned for errors: summarize any ERROR, Exception, or stack-trace lines. If there are none, say so explicitly.
+
+6. Basic resource usage, only if metrics are available. If metrics are not installed, note that and continue; do not treat it as a failure.
+
+Then write health-report.md with:
+- A title and timestamp.
+- An overall STATUS line: "healthy" or "needs attention".
+- One short section per check above with the key numbers and a pass/fail note.
+- A "Recommended follow-ups" section listing any concrete actions (or "none" if all checks pass).
+
+Keep the report concise and skimmable. Show me the final report.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, add <code>health-check.md</code> as context with <code>@</code> → <strong>Add File</strong>, and send the message. Bob asks for your suffix, runs the checks, and writes <code>health-report.md</code>.</li>
+          </ol>
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Read the report, not just the exit codes</span>
+          </div>
+          The point of a written report is that it captures a <strong>point-in-time snapshot</strong> you can compare against later. Skim the overall status and the follow-ups first. If Bob flags anything (a restarting pod, empty endpoints, a 503 on the route), work through it with Bob live before moving on, the same way you debugged the deploy in Lab 6.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob to scale the deployment out under load</div>
+        <div class="step-body">
+          The second Day-2 task is a real operational change: <strong>scale out</strong> to absorb more traffic and prove the app stays available the whole time. Describe the <strong>outcome</strong> you want and let Bob choose and run the right commands. Write this prompt as a Markdown file and hand it to Bob just like the last one.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> Create a <strong>New File</strong> named <code>scale-up.md</code>, paste the prompt below, and save.
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · Scale Out</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt1">Before running anything, ask me for my namespace suffix and wait for my answer. Then use it wherever the namespace deploy-test-&lt;suffix&gt; is referenced.
+
+I want to scale the deployed payment-app in namespace deploy-test-&lt;suffix&gt; out to handle more load, and prove it stays available the whole time. The app is a stateless Spring Boot service on container port 8081, exposed via an edge (HTTPS) route named payment-app.
+
+Work out the right commands yourself and run them, do not invent flags. Do this step by step and report after each step:
+
+1. Record the starting state: note the current replica count of the deployment so we know what to scale back to later.
+
+2. Scale the deployment out to 3 replicas.
+
+3. Wait until all 3 replicas are Running and Ready, and confirm the Service now lists 3 healthy endpoints on port 8081.
+
+4. While scaled out, verify the route still serves traffic over HTTPS: send a handful of requests and report the HTTP status codes. They should all be successful (2xx/3xx); flag anything else, especially a 503.
+
+Summarize what changed at each step and confirm the app stayed reachable throughout. Tell me the original replica count so I can scale it back down in the next step.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In <strong>Code</strong> mode, add <code>scale-up.md</code> with <code>@</code> → <strong>Add File</strong> and send. Bob scales out, waits for readiness, and checks the route, reporting at each step.</li>
+          </ol>
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Note</span>
+          </div>
+          This is a simple, stateless app, so scaling it is low-risk. The operation itself gets harder for stateful or more complex apps, but the <strong>discipline you're practicing carries over directly</strong>: make a change, then prove the app stayed available before moving on. That same verify-as-you-go habit is what makes heavier Day-2 operations like rolling restarts and rollbacks safe.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob to scale the deployment back down</div>
+        <div class="step-body">
+          Scaling out is only half the operation, a clean Day-2 change also means returning to the baseline once the load passes. In a second prompt, ask Bob to <strong>scale back down</strong> to the original size and confirm the app is still healthy afterwards.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> Create a <strong>New File</strong> named <code>scale-down.md</code>, paste the prompt below, and save.
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · Scale Back Down</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt2">Before running anything, ask me for my namespace suffix and wait for my answer. Then use it wherever the namespace deploy-test-&lt;suffix&gt; is referenced.
+
+Scale the deployed payment-app in namespace deploy-test-&lt;suffix&gt; back down to its original size (1 replica unless I tell you otherwise), and confirm it stays available. The app is a stateless Spring Boot service on container port 8081, exposed via an edge (HTTPS) route named payment-app.
+
+Work out the right commands yourself and run them, do not invent flags. Do this step by step and report after each step:
+
+1. Scale the deployment back down to its original replica count.
+
+2. Wait until the rollout settles, then confirm only the expected number of pods are Running and Ready and the Service lists a single healthy endpoint on port 8081.
+
+3. Verify the route still returns a healthy HTTP status code over HTTPS.
+
+Summarize what changed and confirm the deployment is back to its original size and the app stayed reachable throughout.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In <strong>Code</strong> mode, add <code>scale-down.md</code> with <code>@</code> → <strong>Add File</strong> and send. Bob scales back in, waits for the rollout to settle, and confirms the route is still healthy.</li>
+          </ol>
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Note</span>
+          </div>
+          The skill here isn't the operation itself, it's <strong>driving operations through Bob</strong>: describe the outcome you want in plain language, and let it run the commands and verify the result. That same agent-driven workflow scales to any Day-2 task.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>You operated the deployed payment app on <strong>Day 2</strong>, driving live cluster operations by handing Bob a prompt instead of memorizing <code>oc</code> commands.</li>
+        <li>You produced a written <strong>health report</strong> (<code>health-report.md</code>) covering pod status and restarts, rollout status, Service endpoints, HTTPS route reachability, recent error logs, and resource usage, with a clear healthy / needs-attention verdict.</li>
+        <li>You performed a real <strong>scaling operation</strong>: scaled <code>payment-app</code> out to 3 replicas, confirmed all replicas became Ready and the Service had 3 endpoints, verified the route kept serving traffic, then scaled back down.</li>
+        <li>In both tasks you <strong>validated as you went</strong>, confirming the app stayed available throughout, the way Bob watches each result and reports anomalies rather than just firing commands.</li>
+        <li>The takeaway: <strong>Bob turns Day-2 operations into plain-language requests</strong>, so you drive the cluster by describing the outcome you want instead of memorizing commands. The same approach extends to other Day-2 work like rolling restarts, rollbacks, and auto-healing.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="lab-7-cicd-pipeline.html" class="nav-btn">← Previous Lab</a>
+      <a href="../index.html" class="nav-btn">Back to Workshop Home →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+  <script src="../assets/toc.js"></script>
+</body>
+</html>

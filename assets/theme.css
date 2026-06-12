@@ -158,6 +158,31 @@
   color: var(--text) !important;
 }
 
+/* Shared Table of Contents badges (rendered by assets/toc.js) */
+.toc-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: auto;
+}
+.toc-badge.try {
+  background: rgba(80,250,123,0.15);
+  color: #1a9e4b;
+  border: 1px solid rgba(80,250,123,0.55);
+}
+.toc-badge.soon {
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.toc-link.try .toc-label { font-weight: 700; color: var(--text); }
+.toc-link.try { border-left-color: #1a9e4b; }
+.toc-link.soon { opacity: 0.55; }
+
 .theme-toggle {
   width: 32px;
   height: 32px;

@@ -184,31 +184,7 @@
     font-size: 11px;
   }
 
-  /* Workshop availability treatment */
-  .toc-badge {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 2px 5px;
-    border-radius: 3px;
-    margin-left: auto;
-  }
-  .toc-badge.try {
-    background: rgba(80,250,123,0.15);
-    color: #1a9e4b;
-    border: 1px solid rgba(80,250,123,0.55);
-  }
-  .toc-badge.soon {
-    background: var(--surface2);
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-  .toc-link.try .toc-label { font-weight: 700; color: var(--text); }
-  .toc-link.try { border-left-color: #1a9e4b; }
-  .toc-link.soon { opacity: 0.55; }
-
+  /* Workshop availability treatment (TOC badge styles live in assets/theme.css) */
   .flow-node.soon { opacity: 0.4; }
   .flow-node.try .flow-bubble {
     border-width: 2px;
@@ -507,73 +483,7 @@
   </div>
 
   <div class="main-layout">
-    <aside class="sidebar">
-      <div class="sidebar-title">Table of Contents</div>
-      <ul class="toc-list">
-        <li class="toc-item">
-          <a href="index.html" class="toc-link active">
-            <span class="toc-num">0</span>
-            <span class="toc-label">Workshop Intro</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-1-build-app.html" class="toc-link try">
-            <span class="toc-num">1</span>
-            <span class="toc-label">Bob Builds the App</span>
-            <span class="toc-badge try">Try</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-2-java-modernization.html" class="toc-link try">
-            <span class="toc-num">2</span>
-            <span class="toc-label">Java Modernization</span>
-            <span class="toc-badge try">Try</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-3-generate-tests.html" class="toc-link try">
-            <span class="toc-num">3</span>
-            <span class="toc-label">Generate Tests</span>
-            <span class="toc-badge try">Try</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-4-security-scanning.html" class="toc-link try">
-            <span class="toc-num">4</span>
-            <span class="toc-label">Security Scanning</span>
-            <span class="toc-badge try">Try</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-5-infra-as-code.html" class="toc-link soon">
-            <span class="toc-num">5</span>
-            <span class="toc-label">Infra as Code</span>
-            <span class="toc-badge soon">Soon</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-6-deploy-openshift.html" class="toc-link try">
-            <span class="toc-num">6</span>
-            <span class="toc-label">Deploy to OpenShift</span>
-            <span class="toc-badge try">Try</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-7-cicd-pipeline.html" class="toc-link soon">
-            <span class="toc-num">7</span>
-            <span class="toc-label">CI/CD Pipeline</span>
-            <span class="toc-badge soon">Soon</span>
-          </a>
-        </li>
-        <li class="toc-item">
-          <a href="stages/lab-8-day2-sre-ops.html" class="toc-link soon">
-            <span class="toc-num">8</span>
-            <span class="toc-label">Day-2 SRE Ops</span>
-            <span class="toc-badge soon">Soon</span>
-          </a>
-        </li>
-      </ul>
-    </aside>
+    <aside class="sidebar" data-toc></aside>
 
     <div class="container">
       <div class="stage-header">
@@ -589,12 +499,13 @@
       </div>
       This workshop walks through the complete software delivery lifecycle (SDLC) using IBM Bob, from building a payment processing application in a single prompt, through security scanning, CI/CD pipeline generation, and OpenShift deployment, to the Day-2 SRE operations that drive daily operational toil. Bob drives every stage intelligently, generating production-ready artifacts that can be executed immediately against live OpenShift clusters.
       <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,102,204,0.2);">
-        <strong style="color: #1a9e4b;">Today you'll get hands-on with 5 labs:</strong>
+        <strong style="color: #1a9e4b;">Today you'll get hands-on with 6 labs:</strong>
         <a href="stages/lab-1-build-app.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Build the App</a> →
         <a href="stages/lab-2-java-modernization.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Java Modernization</a> →
         <a href="stages/lab-3-generate-tests.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Generate Tests</a> →
         <a href="stages/lab-4-security-scanning.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Security Scan</a> →
-        <a href="stages/lab-6-deploy-openshift.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Deploy to OpenShift</a>.
+        <a href="stages/lab-6-deploy-openshift.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Deploy to OpenShift</a> →
+        <a href="stages/lab-8-day2-sre-ops.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Day-2 SRE Ops</a>.
         The remaining stages are shown for context and marked <em>Soon</em>.
       </div>
     </div>
@@ -663,18 +574,19 @@
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node soon" style="--nc:#4d94ff">
+        <div class="flow-node try" style="--nc:#4d94ff">
           <div class="flow-bubble">
             <div class="flow-num">8</div>
             <div class="flow-label">Day-2 SRE Ops</div>
             <div class="flow-sub">RefreshPOD · Cache · Certs · Vault</div>
+            <span class="flow-try-tag">Hands-on</span>
           </div>
         </div>
       </div>
 
       <div class="kv-grid">
         <div class="kv-card">
-          <div class="kv-val">5 labs</div>
+          <div class="kv-val">6 labs</div>
           <div class="kv-key">hands-on today</div>
         </div>
         <div class="kv-card">
@@ -722,5 +634,6 @@
       </div>
     </div>
   </div>
+  <script src="assets/toc.js"></script>
 </body>
 </html>
