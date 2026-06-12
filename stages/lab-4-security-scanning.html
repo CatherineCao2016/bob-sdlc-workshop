@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab 1a - Java Modernization | IBM Bob SDLC Workshop</title>
+<title>Lab 4 - Security Scanning | IBM Bob SDLC Workshop</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/theme.css">
 <script src="../assets/theme-toggle.js"></script>
@@ -261,6 +261,18 @@
     line-height: 1.7;
   }
 
+  .talking-point-conclusion {
+    background: linear-gradient(135deg, rgba(224,201,127,0.08), rgba(77,148,255,0.05));
+    border: 1px solid rgba(224,201,127,0.25);
+    border-left: 3px solid #e0c97f;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #e0d4a0;
+  }
+
   .tp-list {
     list-style: none;
     padding-left: 0;
@@ -426,29 +438,6 @@
     color: #000000;
   }
 
-  .output-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .output-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
-  .output-icon {
-    color: #000000;
-    flex-shrink: 0;
-  }
-
   .nav-buttons {
     display: flex;
     justify-content: space-between;
@@ -474,11 +463,6 @@
   .nav-btn:hover {
     background: var(--accent);
     border-color: var(--accent);
-  }
-
-  .optional-badge {
-    opacity: 0.7;
-    font-style: italic;
   }
 
   /* STEPS */
@@ -550,7 +534,7 @@
       IBM BOB · SDLC WORKSHOP
     </div>
     <div class="meta">
-      <span>Lab 1a</span>
+      <span>Lab 4</span>
       <a href="../index.html" class="home-link">↑ HOME</a>
     </div>
   </div>
@@ -561,56 +545,68 @@
       <ul class="toc-list">
         <li class="toc-item">
           <a href="../index.html" class="toc-link">
-            <span class="toc-num">00</span>
+            <span class="toc-num">0</span>
             <span class="toc-label">Workshop Intro</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1.html" class="toc-link">
-            <span class="toc-num">01</span>
+          <a href="lab-1-build-app.html" class="toc-link">
+            <span class="toc-num">1</span>
             <span class="toc-label">Bob Builds the App</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1a.html" class="toc-link active">
-            <span class="toc-num">01a</span>
+          <a href="lab-2-java-modernization.html" class="toc-link">
+            <span class="toc-num">2</span>
             <span class="toc-label">Java Modernization</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2.html" class="toc-link">
-            <span class="toc-num">02</span>
+          <a href="lab-3-generate-tests.html" class="toc-link">
+            <span class="toc-num">3</span>
             <span class="toc-label">Generate Tests</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2b.html" class="toc-link">
-            <span class="toc-num">02b</span>
+          <a href="lab-4-security-scanning.html" class="toc-link active">
+            <span class="toc-num">4</span>
             <span class="toc-label">Security Scanning</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-3.html" class="toc-link">
-            <span class="toc-num">03</span>
+          <a href="lab-5-infra-as-code.html" class="toc-link">
+            <span class="toc-num">5</span>
             <span class="toc-label">Infra as Code</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4.html" class="toc-link">
-            <span class="toc-num">04</span>
+          <a href="lab-6-deploy-openshift.html" class="toc-link">
+            <span class="toc-num">6</span>
             <span class="toc-label">Deploy to OpenShift</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4b.html" class="toc-link">
-            <span class="toc-num">04b</span>
+          <a href="lab-7-cicd-pipeline.html" class="toc-link">
+            <span class="toc-num">7</span>
             <span class="toc-label">CI/CD Pipeline</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-5.html" class="toc-link">
-            <span class="toc-num">05</span>
+          <a href="lab-8-day2-sre-ops.html" class="toc-link">
+            <span class="toc-num">8</span>
             <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="instructor-openshift-setup.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Instructor: Cluster Setup</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="install-oc-cli.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Install the oc CLI</span>
           </a>
         </li>
       </ul>
@@ -618,9 +614,9 @@
 
     <div class="container">
     <div class="stage-header">
-      <div class="stage-badge">Lab 01a · Modernize</div>
-      <div class="stage-title">Java Modernization</div>
-      <div class="stage-desc">Upgrade the app from Java 11 to Java 17 with Bob's modernization capability</div>
+      <div class="stage-badge">Lab 4 · Security</div>
+      <div class="stage-title">Security Scanning</div>
+      <div class="stage-desc">Run a contextual security analysis and get a fix for every finding</div>
     </div>
 
     <div class="section-label">Prerequisites</div>
@@ -630,8 +626,7 @@
         <span class="note-label">Before You Start</span>
       </div>
       <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
-        <li><strong>Lab 1 completed</strong>, so you have the <code>payment-app-java11</code> project open in the Bob IDE.</li>
-        <li>A <strong>JDK (17 or later)</strong> on your PATH. The modernized app will not compile on an older JDK. Verify with <code>java -version</code>.</li>
+        <li><strong>Lab 2 completed</strong>, so you have the <code>payment-app-java17</code> project open in the Bob IDE with its test suite passing.</li>
       </ol>
     </div>
 
@@ -641,9 +636,8 @@
         <span class="tp-label">OVERVIEW</span>
       </div>
       <ul class="tp-list">
-        <li>We built the app on Java 11 intentionally. This lets us showcase one of Bob's most compelling enterprise use cases: <strong>code modernization</strong>.</li>
-        <li>Many organizations are running legacy Java versions across hundreds of services. Bob can analyze the codebase, identify what needs to change, and produce a structured upgrade plan before touching a single line of code.</li>
-        <li>The workflow has two phases: <strong>plan first, then execute</strong>. You review the plan in between, exactly how you would want an engineer to approach a risky migration.</li>
+        <li>Now that we know the app works correctly (tests pass), we need to know it's also safe to ship. We'll ask Bob to perform a <strong>contextual security analysis</strong>: not just pattern-matching for known bad strings, but reasoning about the code's semantics to surface logic flaws, insecure patterns, and risky handling of sensitive data.</li>
+        <li>Bob produces a report with a <strong>severity rating and a concrete fix recommendation for every finding</strong>, and it can apply those fixes right in the IDE.</li>
       </ul>
     </div>
 
@@ -653,42 +647,33 @@
     <div class="step">
       <div class="step-number">1</div>
       <div class="step-content">
-        <div class="step-title">Ask Bob for a modernization plan</div>
+        <div class="step-title">Ask Bob for a contextual security analysis</div>
         <div class="step-body">
-          As in Lab 1, we'll write the prompt as a Markdown file in the workspace, then hand that file to Bob. The prompt asks Bob to analyze the app and produce a plan only, with no code changes yet. Planning before changing is the same habit you saw in Lab 1: put the expectations on paper, then let Bob work against them.
+          As in the earlier labs, write the prompt as a Markdown file in the workspace, then hand that file to Bob. The prompt asks Bob to review the app for secrets, logic flaws, missing validation, and risky handling of sensitive data, and to produce a report with a fix for every finding.
           <ol class="substeps">
-            <li><strong>Create the prompt file.</strong> In the Explorer panel, hover your workspace folder and click <strong>New File</strong>, name it <code>modernization-prompt.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>security-analysis.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
               <div class="prompt-card" style="margin-top:12px;">
                 <div class="prompt-header" onclick="togglePrompt(this)">
-                  <span class="prompt-label">Prompt · Java Modernization Action Plan</span>
+                  <span class="prompt-label">Prompt · Contextual Security Analysis</span>
                   <div style="display:flex;gap:8px;align-items:center">
                     <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
                     <span class="prompt-toggle">▼</span>
                   </div>
                 </div>
-                <div class="prompt-body" id="prompt0">Analyze the payment application and create a detailed action plan to modernize it from Java 11 to Java 17.
+                <div class="prompt-body" id="prompt0">Perform a contextual security analysis of the payment-app-java17 application.
 
-The plan should include:
-1. Summary of changes required (dependencies, APIs, syntax, config)
-2. List of deprecated or removed APIs that need replacing
-3. New Java 17 features that can improve the codebase (records, sealed classes, text blocks, pattern matching)
-4. Updated pom.xml changes required (Java version, Spring Boot compatibility)
-5. Estimated effort and risk for each change
-6. Recommended order of changes to minimize risk
+Review the source and configuration for:
+- Hardcoded secrets, API keys, passwords, or tokens
+- Logic flaws and insecure patterns
+- Missing or weak input validation
+- Risky handling of sensitive data (e.g. card numbers, PII)
 
-Do not make any code changes yet. Produce the plan as: JavaModernizationPlan.md</div>
+For each issue found, show the file, line number, severity, and a one-line fix recommendation.
+Produce a report: SecurityScanReport.md</div>
               </div>
             </li>
-            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Plan</strong> mode, then add <code>modernization-prompt.md</code> as context by typing <code>@</code> in the chat box. A menu pops up: select <strong>Add File</strong>, then select <code>modernization-prompt.md</code>, and send the message.</li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, then add <code>security-analysis.md</code> as context with <code>@</code> → <strong>Add File</strong> and send the message.</li>
           </ol>
-        </div>
-
-        <div class="stage-tip">
-          <div class="tip-header">
-            <span class="tip-icon">💡</span>
-            <span class="tip-label">Tip</span>
-          </div>
-          Keeping prompts as files in the workspace has another benefit: they can be reviewed, modified, and version controlled the same way as code, so your team can share and refine them over time.
         </div>
       </div>
     </div>
@@ -697,90 +682,10 @@ Do not make any code changes yet. Produce the plan as: JavaModernizationPlan.md<
     <div class="step">
       <div class="step-number">2</div>
       <div class="step-content">
-        <div class="step-title">Review the plan</div>
+        <div class="step-title">Review the findings and suggested fixes</div>
         <div class="step-body">
-          Bob produces a structured <code>JavaModernizationPlan.md</code>. Open it and review the breakdown: what changes are required, which deprecated APIs need replacing, what new Java 17 features can be adopted (records, text blocks, pattern matching), the <code>pom.xml</code> updates, and the estimated effort, risk, and recommended order for each change. This is the kind of analysis that would normally take a senior developer days to produce manually.
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 3 -->
-    <div class="step">
-      <div class="step-number">3</div>
-      <div class="step-content">
-        <div class="step-title">Execute the modernization</div>
-        <div class="step-body">
-          As before, create a prompt file to ask Bob to execute the plan, then hand it over. Watch it work through the codebase systematically: updating dependencies, replacing deprecated APIs, and adopting Java 17 features. The prompt tells Bob to write the result to a new <code>payment-app-java17</code> folder and leave the original untouched, so you can compare the two side by side.
-          <ol class="substeps">
-            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>execute-modernization.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
-              <div class="prompt-card" style="margin-top:12px;">
-                <div class="prompt-header" onclick="togglePrompt(this)">
-                  <span class="prompt-label">Prompt · Execute the Modernization</span>
-                  <div style="display:flex;gap:8px;align-items:center">
-                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
-                    <span class="prompt-toggle">▼</span>
-                  </div>
-                </div>
-                <div class="prompt-body" id="prompt1">Execute the JavaModernizationPlan.md: modernize the payment application from Java 11 to Java 17.
-
-Apply all changes identified in the plan:
-1. Update pom.xml: Java version to 17, Spring Boot and dependency versions
-2. Replace any deprecated or removed APIs with Java 17 equivalents
-3. Apply Java 17 features where they improve the code:
-   - Records for immutable model classes
-   - Text blocks for multi-line strings
-   - Pattern matching for instanceof checks
-   - Sealed classes where appropriate
-4. Remove Lombok if present; replace with Java records or explicit methods
-5. Verify the application still compiles and runs with: mvn spring-boot:run
-
-Output the modernized application in a new folder alongside the original:
-
-```
-payment-app-java11/   ← original Java 11 (do not modify)
-payment-app-java17/   ← modernized Java 17
-├── src/
-│   └── main/
-│       ├── java/com/demo/payment/
-│       │   ├── controller/
-│       │   ├── service/
-│       │   ├── model/        ← records replace verbose POJOs
-│       │   └── config/
-│       └── resources/
-│           ├── static/
-│           └── application.properties
-├── pom.xml           ← updated to Java 17 + Spring Boot 3.x
-├── Dockerfile
-└── README.md
-```
-
-Do not run the application. I will verify it myself.</div>
-              </div>
-            </li>
-            <li><strong>Hand it to Bob.</strong> In the chat panel, make sure you're in <strong>Code</strong> mode, then add <code>execute-modernization.md</code> as context with <code>@</code> → <strong>Add File</strong> and send the message.</li>
-          </ol>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- STEP 4 -->
-    <div class="step">
-      <div class="step-number">4</div>
-      <div class="step-content">
-        <div class="step-title">Review what Bob delivered</div>
-        <div class="step-body">
-          When Bob wraps up, it summarizes the changes it made. The original <code>payment-app-java11</code> is untouched and the modernized version sits in <code>payment-app-java17</code>, so you can open the same file in both folders and see exactly what changed. Open these three pairs side by side:
-          <ol class="substeps">
-            <li><strong>A model class becomes a record.</strong> Open <code>model/PaymentRequest.java</code> in both folders. The Java 11 version is a <strong>61-line</strong> class: private fields plus a getter and setter for every one. The Java 17 version is a <strong>26-line</strong> <code>record</code> that keeps the same validation annotations but drops all the boilerplate. That's roughly <strong>60% less code</strong> for the same behavior, and Bob applied the same change to <code>PaymentResponse.java</code> (88 lines down to 36).</li>
-            <li><strong>The Jakarta EE namespace migration.</strong> In the same files, notice the imports flipped from <code>javax.validation.*</code> to <code>jakarta.validation.*</code>. This is the breaking change that blocks most manual Spring Boot 2 → 3 upgrades; Bob found and updated every occurrence across the codebase.</li>
-            <li><strong>The build file.</strong> Open <code>pom.xml</code> in both. Bob bumped <code>&lt;java.version&gt;</code> from <code>11</code> to <code>17</code> and the Spring Boot parent from <code>2.7.18</code> to <code>3.2.5</code>, the coordinated jump that pulls in the Jakarta namespace above.
-              <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
-                <source src="../assets/videos/java-mod-side-by-side.mp4" type="video/mp4">
-                Your browser doesn't support embedded video. <a href="../assets/videos/java-mod-side-by-side.mp4">Download the clip</a>.
-              </video>
-            </li>
-          </ol>
+          Open <code>SecurityScanReport.md</code>. Expect a mix of HIGH, MEDIUM, and LOW severity findings, each with the exact file name and line number. This is contextual analysis, not just string matching: Bob reasons about what the code actually does, so it can flag things like weak input validation or sensitive data being logged or persisted, and explain why each is a risk.<br><br>
+          What makes this powerful isn't just that Bob found the issues; the report includes a suggested fix for every single finding. The developer doesn't have to figure out how to fix it, Bob tells them exactly what to do. And if they want to go further, they can simply ask Bob to fix the issues listed in the report, right there in the IDE.
         </div>
 
         <div class="stage-tip">
@@ -788,33 +693,8 @@ Do not run the application. I will verify it myself.</div>
             <span class="tip-icon">💡</span>
             <span class="tip-label">Tip</span>
           </div>
-          That is one service modernized, reviewed, and explained in minutes. The same plan-then-execute workflow runs unchanged across 200 services, which is where the real enterprise value shows up.
+          From automated tests to security analysis, Bob addressed both correctness and security: areas that normally require separate tools, teams, and later checkpoints in the SDLC.<br><br>This is what shift-left looks like in practice: issues were surfaced and resolved directly earlier on during dev time before any code even reached the CI/CD pipeline.<br><br>Keep in mind: Bob's security analysis is an extra layer, not a replacement for existing SAST, DAST, or vulnerability management tooling. Your enterprise security processes still apply; Bob catches issues earlier, before code leaves the developer's machine.<br><br>And you're not limited to Bob's own analysis: you can plug your existing security tools into Bob via <strong>MCP servers</strong> or their <strong>APIs/SDKs</strong>, then ask Bob to run them and reason over the results, bringing your established scanners right into the same conversational workflow.
         </div>
-      </div>
-    </div>
-
-    <!-- STEP 5 -->
-    <div class="step">
-      <div class="step-number">5</div>
-      <div class="step-content">
-        <div class="step-title">Run the modernized app</div>
-        <div class="step-body">
-          First, <strong>stop the original app if it's still running</strong>: press <code>Ctrl+C</code> in its terminal. Otherwise you'll get a port conflict on <code>localhost:8080</code>. Then run:<br><br>
-          <code>cd payment-app-java17 &amp;&amp; mvn spring-boot:run</code><br><br>
-          Open <code>localhost:8080</code> and confirm the payment flow still works exactly as it did in Lab 1: same UI, same transactions, now on Java 17.
-        </div>
-        <div class="stage-tip">
-          <div class="tip-header">
-            <span class="tip-icon">💡</span>
-            <span class="tip-label">Tip</span>
-          </div>
-          If you hit compile or runtime errors, you don't need to copy and paste them. Type <code>@</code> in the chat box and select <strong>Terminal</strong> to point Bob at the terminal: it automatically pulls in the error output, diagnoses the cause, and fixes it.
-        </div>
-
-        <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
-          <source src="../assets/videos/kill-terminal-start-new-app.mp4" type="video/mp4">
-          Your browser doesn't support embedded video. <a href="../assets/videos/kill-terminal-start-new-app.mp4">Download the clip</a>.
-        </video>
       </div>
     </div>
 
@@ -825,17 +705,17 @@ Do not run the application. I will verify it myself.</div>
         <span class="tp-label">WHAT YOU ACHIEVED</span>
       </div>
       <ul class="tp-list tp-check">
-        <li>Bob analyzed a legacy Java 11 codebase and produced a <strong>structured modernization plan</strong>: required changes, deprecated APIs, effort and risk per change, and a recommended order. No code was touched until you reviewed it.</li>
-        <li>Bob then <strong>executed the plan</strong>: upgraded <code>pom.xml</code> to Java 17 and Spring Boot 3.x, replaced deprecated APIs, and adopted records, text blocks, and pattern matching.</li>
-        <li>The original app stayed intact; the modernized version landed in its own folder for <strong>side-by-side comparison</strong>.</li>
-        <li>You <strong>ran the Java 17 app</strong> and confirmed the behavior is unchanged.</li>
-        <li>The takeaway: <strong>plan-then-execute modernization in minutes</strong>, with a workflow that scales from one service to hundreds.</li>
+        <li>You asked Bob for a <strong>contextual security analysis</strong>: reasoning about the code's semantics, not just pattern-matching for bad strings.</li>
+        <li>Bob produced <code>SecurityScanReport.md</code> with the file, line number, severity, and a <strong>concrete fix recommendation for every finding</strong>.</li>
+        <li>You can ask Bob to <strong>apply those fixes directly in the IDE</strong>, with no context switching.</li>
+        <li>Combined with Lab 2, the app is now checked for both <strong>correctness and security</strong> before any code reaches the CI/CD pipeline.</li>
+        <li>The takeaway: <strong>shift-left security in practice</strong>; Bob is an extra early layer, complementing (not replacing) your enterprise SAST, DAST, and vulnerability management tooling.</li>
       </ul>
     </div>
 
     <div class="nav-buttons">
-      <a href="stage-1.html" class="nav-btn">← Previous Lab</a>
-      <a href="stage-2.html" class="nav-btn">Next: Lab 2 →</a>
+      <a href="lab-3-generate-tests.html" class="nav-btn">← Previous Lab</a>
+      <a href="lab-5-infra-as-code.html" class="nav-btn">Next: Lab 5 →</a>
     </div>
   </div>
 

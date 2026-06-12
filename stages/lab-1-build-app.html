@@ -600,7 +600,7 @@
       IBM BOB · SDLC WORKSHOP
     </div>
     <div class="meta">
-      <span>Lab 1 of 8</span>
+      <span>Lab 1 of 10</span>
       <a href="../index.html" class="home-link">↑ HOME</a>
     </div>
   </div>
@@ -611,56 +611,68 @@
       <ul class="toc-list">
         <li class="toc-item">
           <a href="../index.html" class="toc-link">
-            <span class="toc-num">00</span>
+            <span class="toc-num">0</span>
             <span class="toc-label">Workshop Intro</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1.html" class="toc-link active">
-            <span class="toc-num">01</span>
+          <a href="lab-1-build-app.html" class="toc-link active">
+            <span class="toc-num">1</span>
             <span class="toc-label">Bob Builds the App</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1a.html" class="toc-link">
-            <span class="toc-num">01a</span>
+          <a href="lab-2-java-modernization.html" class="toc-link">
+            <span class="toc-num">2</span>
             <span class="toc-label">Java Modernization</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2.html" class="toc-link">
-            <span class="toc-num">02</span>
+          <a href="lab-3-generate-tests.html" class="toc-link">
+            <span class="toc-num">3</span>
             <span class="toc-label">Generate Tests</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2b.html" class="toc-link">
-            <span class="toc-num">02b</span>
+          <a href="lab-4-security-scanning.html" class="toc-link">
+            <span class="toc-num">4</span>
             <span class="toc-label">Security Scanning</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-3.html" class="toc-link">
-            <span class="toc-num">03</span>
+          <a href="lab-5-infra-as-code.html" class="toc-link">
+            <span class="toc-num">5</span>
             <span class="toc-label">Infra as Code</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4.html" class="toc-link">
-            <span class="toc-num">04</span>
+          <a href="lab-6-deploy-openshift.html" class="toc-link">
+            <span class="toc-num">6</span>
             <span class="toc-label">Deploy to OpenShift</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4b.html" class="toc-link">
-            <span class="toc-num">04b</span>
+          <a href="lab-7-cicd-pipeline.html" class="toc-link">
+            <span class="toc-num">7</span>
             <span class="toc-label">CI/CD Pipeline</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-5.html" class="toc-link">
-            <span class="toc-num">05</span>
+          <a href="lab-8-day2-sre-ops.html" class="toc-link">
+            <span class="toc-num">8</span>
             <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="instructor-openshift-setup.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Instructor: Cluster Setup</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="install-oc-cli.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Install the oc CLI</span>
           </a>
         </li>
       </ul>
@@ -668,7 +680,7 @@
 
     <div class="container">
       <div class="stage-header">
-      <div class="stage-badge">Lab 01 · Build</div>
+      <div class="stage-badge">Lab 1 · Build</div>
       <div class="stage-title">Bob Builds the App</div>
       <div class="stage-desc">One prompt → full deployable payment app</div>
     </div>
@@ -769,15 +781,17 @@ Frontend (React):
 - Payment form: card number, expiry, CVV, amount
 - Transaction history dashboard showing recent payments
 - Status badges: Authorized (yellow), Captured (green), Declined (red), Refunded (gray)
-- Simple and clean. This is for a demo, not production
+- Simple and clean — this is for a demo, not production
 
 Make it run with a single command: mvn spring-boot:run
 
 Do not run the application. I will run it myself.
 
 Also generate:
-- Dockerfile: multi-stage build, distroless base, non-root user
-- k8s/deployment.yaml: OpenShift deployment manifest with placeholder values:
+- Dockerfile — multi-stage build, distroless base, non-root user
+  - Build stage: docker.io/library/maven:3.9-eclipse-temurin-11 (fully-qualified, existing tag — avoid the deprecated maven:*-openjdk-* tags, which no longer exist on Docker Hub)
+  - Runtime stage: gcr.io/distroless/java11-debian11:nonroot
+- k8s/deployment.yaml — OpenShift deployment manifest with placeholder values:
   - Image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/payment-app:${IMAGE_TAG}
     # in-cluster pull path. At deploy time: ${NAMESPACE} → bob-demo-staging (or bob-demo-prod),
     # ${IMAGE_TAG} → git SHA. The CI job pushes the same image via the external route ($OPENSHIFT_REGISTRY).
@@ -785,7 +799,7 @@ Also generate:
   - 3 replicas, resource limits, readiness/liveness probes
   - PodDisruptionBudget (max 1 unavailable)
   - Service and Route
-  Use placeholder values only; real cluster values will be injected at deploy time.
+  Use placeholder values only — real cluster values will be injected at deploy time.
 
 Use the following folder structure:
 ```
@@ -929,7 +943,7 @@ payment-app-java11/
 
     <div class="nav-buttons">
       <a href="../index.html" class="nav-btn">← Previous Lab</a>
-      <a href="stage-1a.html" class="nav-btn">Next: Lab 1a →</a>
+      <a href="lab-2-java-modernization.html" class="nav-btn">Next: Lab 2 →</a>
     </div>
     </div>
   </div>

@@ -184,6 +184,50 @@
     font-size: 11px;
   }
 
+  /* Workshop availability treatment */
+  .toc-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+  .toc-badge.try {
+    background: rgba(80,250,123,0.15);
+    color: #1a9e4b;
+    border: 1px solid rgba(80,250,123,0.55);
+  }
+  .toc-badge.soon {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .toc-link.try .toc-label { font-weight: 700; color: var(--text); }
+  .toc-link.try { border-left-color: #1a9e4b; }
+  .toc-link.soon { opacity: 0.55; }
+
+  .flow-node.soon { opacity: 0.4; }
+  .flow-node.try .flow-bubble {
+    border-width: 2px;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--nc, #4d94ff) 35%, transparent);
+  }
+  .flow-try-tag {
+    display: inline-block;
+    margin-top: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #1a9e4b;
+    background: rgba(80,250,123,0.15);
+    border: 1px solid rgba(80,250,123,0.55);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
   /* CONTENT */
   .container {
     flex: 1;
@@ -457,7 +501,7 @@
       IBM BOB · SDLC WORKSHOP
     </div>
     <div class="meta">
-      <span>Lab 0 of 8</span>
+      <span>Lab 0 of 10</span>
       <a href="index.html" class="home-link">↑ HOME</a>
     </div>
   </div>
@@ -468,56 +512,64 @@
       <ul class="toc-list">
         <li class="toc-item">
           <a href="index.html" class="toc-link active">
-            <span class="toc-num">00</span>
+            <span class="toc-num">0</span>
             <span class="toc-label">Workshop Intro</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-1.html" class="toc-link">
-            <span class="toc-num">01</span>
+          <a href="stages/lab-1-build-app.html" class="toc-link try">
+            <span class="toc-num">1</span>
             <span class="toc-label">Bob Builds the App</span>
+            <span class="toc-badge try">Try</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-1a.html" class="toc-link">
-            <span class="toc-num">01a</span>
+          <a href="stages/lab-2-java-modernization.html" class="toc-link soon">
+            <span class="toc-num">2</span>
             <span class="toc-label">Java Modernization</span>
+            <span class="toc-badge soon">Soon</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-2.html" class="toc-link">
-            <span class="toc-num">02</span>
+          <a href="stages/lab-3-generate-tests.html" class="toc-link try">
+            <span class="toc-num">3</span>
             <span class="toc-label">Generate Tests</span>
+            <span class="toc-badge try">Try</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-2b.html" class="toc-link">
-            <span class="toc-num">02b</span>
+          <a href="stages/lab-4-security-scanning.html" class="toc-link try">
+            <span class="toc-num">4</span>
             <span class="toc-label">Security Scanning</span>
+            <span class="toc-badge try">Try</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-3.html" class="toc-link">
-            <span class="toc-num">03</span>
+          <a href="stages/lab-5-infra-as-code.html" class="toc-link soon">
+            <span class="toc-num">5</span>
             <span class="toc-label">Infra as Code</span>
+            <span class="toc-badge soon">Soon</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-4.html" class="toc-link">
-            <span class="toc-num">04</span>
+          <a href="stages/lab-6-deploy-openshift.html" class="toc-link try">
+            <span class="toc-num">6</span>
             <span class="toc-label">Deploy to OpenShift</span>
+            <span class="toc-badge try">Try</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-4b.html" class="toc-link">
-            <span class="toc-num">04b</span>
+          <a href="stages/lab-7-cicd-pipeline.html" class="toc-link soon">
+            <span class="toc-num">7</span>
             <span class="toc-label">CI/CD Pipeline</span>
+            <span class="toc-badge soon">Soon</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stages/stage-5.html" class="toc-link">
-            <span class="toc-num">05</span>
+          <a href="stages/lab-8-day2-sre-ops.html" class="toc-link soon">
+            <span class="toc-num">8</span>
             <span class="toc-label">Day-2 SRE Ops</span>
+            <span class="toc-badge soon">Soon</span>
           </a>
         </li>
       </ul>
@@ -525,7 +577,7 @@
 
     <div class="container">
       <div class="stage-header">
-      <div class="stage-badge">Lab 00 · Intro</div>
+      <div class="stage-badge">Lab 0 · Intro</div>
       <div class="stage-title">Workshop Intro</div>
       <div class="stage-desc">Full SDLC overview: what Bob does, and why it matters</div>
     </div>
@@ -536,62 +588,74 @@
         <span class="tp-label">OVERVIEW</span>
       </div>
       This workshop walks through the complete software delivery lifecycle (SDLC) using IBM Bob, from building a payment processing application in a single prompt, through security scanning, CI/CD pipeline generation, and OpenShift deployment, to the Day-2 SRE operations that drive daily operational toil. Bob drives every stage intelligently, generating production-ready artifacts that can be executed immediately against live OpenShift clusters.
+      <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,102,204,0.2);">
+        <strong style="color: #1a9e4b;">Today you'll get hands-on with 4 labs:</strong>
+        <a href="stages/lab-1-build-app.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Build the App</a> →
+        <a href="stages/lab-3-generate-tests.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Generate Tests</a> →
+        <a href="stages/lab-4-security-scanning.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Security Scan</a> →
+        <a href="stages/lab-6-deploy-openshift.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Deploy to OpenShift</a>.
+        The remaining stages are shown for context and marked <em>Soon</em>.
+      </div>
     </div>
 
     <div class="section-label">Visual Lab Overview</div>
     <div class="flow-overview">
       <div class="flow-track">
-        <div class="flow-node" style="--nc:#4d94ff">
+        <div class="flow-node try" style="--nc:#4d94ff">
           <div class="flow-bubble">
-            <div class="flow-num">01</div>
+            <div class="flow-num">1</div>
             <div class="flow-label">Build App</div>
             <div class="flow-sub">One prompt → full payment app</div>
+            <span class="flow-try-tag">Hands-on</span>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#00d4aa">
+        <div class="flow-node try" style="--nc:#00d4aa">
           <div class="flow-bubble">
-            <div class="flow-num">02</div>
+            <div class="flow-num">3</div>
             <div class="flow-label">Generate Tests</div>
             <div class="flow-sub">Full test suite · Edge cases</div>
+            <span class="flow-try-tag">Hands-on</span>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#a78bfa">
+        <div class="flow-node try" style="--nc:#a78bfa">
           <div class="flow-bubble">
-            <div class="flow-num">02b</div>
+            <div class="flow-num">4</div>
             <div class="flow-label">Security Scan</div>
             <div class="flow-sub">Secrets · CVE · Context analysis</div>
+            <span class="flow-try-tag">Hands-on</span>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#ffb347">
+        <div class="flow-node soon" style="--nc:#ffb347">
           <div class="flow-bubble">
-            <div class="flow-num">03</div>
+            <div class="flow-num">5</div>
             <div class="flow-label">Infra as Code</div>
             <div class="flow-sub">Terraform · Ansible</div>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#ff6b9d">
+        <div class="flow-node try" style="--nc:#ff6b9d">
           <div class="flow-bubble">
-            <div class="flow-num">04</div>
+            <div class="flow-num">6</div>
             <div class="flow-label">Deploy</div>
             <div class="flow-sub">Manual deploy to OpenShift</div>
+            <span class="flow-try-tag">Hands-on</span>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#50fa7b">
+        <div class="flow-node soon" style="--nc:#ff6b9d">
           <div class="flow-bubble">
-            <div class="flow-num">04b</div>
+            <div class="flow-num">7</div>
             <div class="flow-label">CI/CD Pipeline</div>
             <div class="flow-sub">GitHub Actions · Auto-deploy</div>
           </div>
           <div class="flow-arrow">→</div>
         </div>
-        <div class="flow-node" style="--nc:#4d94ff">
+        <div class="flow-node soon" style="--nc:#4d94ff">
           <div class="flow-bubble">
-            <div class="flow-num">05</div>
+            <div class="flow-num">8</div>
             <div class="flow-label">Day-2 SRE Ops</div>
             <div class="flow-sub">RefreshPOD · Cache · Certs · Vault</div>
           </div>
@@ -600,8 +664,8 @@
 
       <div class="kv-grid">
         <div class="kv-card">
-          <div class="kv-val">7 labs</div>
-          <div class="kv-key">pick and choose</div>
+          <div class="kv-val">4 labs</div>
+          <div class="kv-key">hands-on today</div>
         </div>
         <div class="kv-card">
           <div class="kv-val">Java 11→17</div>
@@ -644,7 +708,7 @@
 
       <div class="nav-buttons">
         <a href="index.html" class="nav-btn">← Back to Index</a>
-        <a href="stages/stage-1.html" class="nav-btn">Next: Lab 1 →</a>
+        <a href="stages/lab-1-build-app.html" class="nav-btn">Next: Lab 1 →</a>
       </div>
     </div>
   </div>

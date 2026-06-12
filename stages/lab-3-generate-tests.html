@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab 6 - Auto-Heal & Diagnose | IBM Bob SDLC Workshop</title>
+<title>Lab 3 - Generate Tests | IBM Bob SDLC Workshop</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/theme.css">
 <script src="../assets/theme-toggle.js"></script>
@@ -261,6 +261,30 @@
     line-height: 1.7;
   }
 
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
   .section-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
@@ -346,57 +370,7 @@
     background: var(--accent2);
   }
 
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-  }
-
-  .nav-btn {
-    padding: 10px 20px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.2s;
-    display: inline-block;
-  }
-
-  .nav-btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .tp-list {
-    list-style: none;
-    padding-left: 0;
-  }
-
-  .tp-list li {
-    margin-bottom: 10px;
-    padding-left: 20px;
-    position: relative;
-  }
-
-  .tp-list li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-  }
-
-  .tp-list.tp-check li::before {
-    content: "✓";
-    color: var(--accent2);
-    font-weight: 700;
-  }
-
+  
   .note-header, .tip-header {
     display: flex;
     align-items: center;
@@ -452,27 +426,31 @@
     color: #000000;
   }
 
-  .output-list {
+  .nav-buttons {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
   }
 
-  .output-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 8px 12px;
+  .nav-btn {
+    padding: 10px 20px;
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
   }
 
-  .output-icon {
-    color: #000000;
-    flex-shrink: 0;
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
   }
 
   /* STEPS */
@@ -522,6 +500,19 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
   }
+
+  .substeps {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .substeps li {
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
 </style>
 </head>
 <body>
@@ -531,7 +522,7 @@
       IBM BOB · SDLC WORKSHOP
     </div>
     <div class="meta">
-      <span>Lab 6 of 8</span>
+      <span>Lab 3 of 10</span>
       <a href="../index.html" class="home-link">↑ HOME</a>
     </div>
   </div>
@@ -542,68 +533,68 @@
       <ul class="toc-list">
         <li class="toc-item">
           <a href="../index.html" class="toc-link">
-            <span class="toc-num">00</span>
+            <span class="toc-num">0</span>
             <span class="toc-label">Workshop Intro</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1.html" class="toc-link">
-            <span class="toc-num">01</span>
+          <a href="lab-1-build-app.html" class="toc-link">
+            <span class="toc-num">1</span>
             <span class="toc-label">Bob Builds the App</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-1a.html" class="toc-link">
-            <span class="toc-num">01a</span>
+          <a href="lab-2-java-modernization.html" class="toc-link">
+            <span class="toc-num">2</span>
             <span class="toc-label">Java Modernization</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2.html" class="toc-link">
-            <span class="toc-num">02</span>
+          <a href="lab-3-generate-tests.html" class="toc-link active">
+            <span class="toc-num">3</span>
             <span class="toc-label">Generate Tests</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-2b.html" class="toc-link">
-            <span class="toc-num">02b</span>
+          <a href="lab-4-security-scanning.html" class="toc-link">
+            <span class="toc-num">4</span>
             <span class="toc-label">Security Scanning</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-3.html" class="toc-link">
-            <span class="toc-num">03</span>
+          <a href="lab-5-infra-as-code.html" class="toc-link">
+            <span class="toc-num">5</span>
             <span class="toc-label">Infra as Code</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4.html" class="toc-link">
-            <span class="toc-num">04</span>
+          <a href="lab-6-deploy-openshift.html" class="toc-link">
+            <span class="toc-num">6</span>
             <span class="toc-label">Deploy to OpenShift</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-4b.html" class="toc-link">
-            <span class="toc-num">04b</span>
+          <a href="lab-7-cicd-pipeline.html" class="toc-link">
+            <span class="toc-num">7</span>
             <span class="toc-label">CI/CD Pipeline</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-5.html" class="toc-link">
-            <span class="toc-num">05</span>
+          <a href="lab-8-day2-sre-ops.html" class="toc-link">
+            <span class="toc-num">8</span>
             <span class="toc-label">Day-2 SRE Ops</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-6.html" class="toc-link active">
-            <span class="toc-num">06</span>
-            <span class="toc-label">Auto-Heal & Diagnose</span>
+          <a href="instructor-openshift-setup.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Instructor: Cluster Setup</span>
           </a>
         </li>
         <li class="toc-item">
-          <a href="stage-7.html" class="toc-link">
-            <span class="toc-num">07</span>
-            <span class="toc-label">Backup Prompts</span>
+          <a href="install-oc-cli.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Install the oc CLI</span>
           </a>
         </li>
       </ul>
@@ -611,9 +602,9 @@
 
     <div class="container">
     <div class="stage-header">
-      <div class="stage-badge">Lab 06 · Heal</div>
-      <div class="stage-title">Auto-Heal & Diagnose</div>
-      <div class="stage-desc">Detect broken pods, diagnose, fix, incident analysis</div>
+      <div class="stage-badge">Lab 3 · Tests</div>
+      <div class="stage-title">Generate Tests</div>
+      <div class="stage-desc">Generate a full test suite covering happy paths, edge cases, and failure scenarios</div>
     </div>
 
     <div class="section-label">Prerequisites</div>
@@ -623,8 +614,7 @@
         <span class="note-label">Before You Start</span>
       </div>
       <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
-        <li><strong>Lab 4 completed</strong>, so the payment app is deployed and running in the <code>bob-demo</code> namespace on OpenShift.</li>
-        <li><strong>Lab 5 completed</strong>, so you have the Bob IDE open with access to the cluster for Day-2 operations.</li>
+        <li><strong>Lab 2 completed</strong>, so you have the modernized <code>payment-app-java17</code> project open in the Bob IDE. The tests in this lab target that directory. If you skipped Lab 2, you can grab the ready-made Java 17 version here: <a href="#" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">payment-app-java17</a>.</li>
       </ol>
     </div>
 
@@ -633,7 +623,9 @@
         <span class="tp-icon">💬</span>
         <span class="tp-label">OVERVIEW</span>
       </div>
-      Jenkins fails at 3am and pages your on-call engineer. Bob detects the failure, reads the logs, diagnoses the root cause, rolls back the deployment, and leaves you a report in the morning. That's the difference between running scripts and having an intelligent agent.
+      <ul class="tp-list">
+        <li>Testing is a core part of any software delivery lifecycle; industry standards like CI/CD, DevSecOps, and agile all mandate that code is validated before it ships. We'll ask Bob to generate a full test suite covering happy paths, edge cases, and failure scenarios, with no manual test writing required.</li>
+      </ul>
     </div>
 
     <div class="section-label">Step-by-Step</div>
@@ -642,29 +634,41 @@
     <div class="step">
       <div class="step-number">1</div>
       <div class="step-content">
-        <div class="step-title">Send the auto-heal prompt</div>
+        <div class="step-title">Ask Bob to generate the test suite</div>
         <div class="step-body">
-          In the Bob chat panel, send the prompt below. It asks Bob to sweep the <code>bob-demo</code> namespace for unhealthy pods (CrashLoopBackOff, OOMKilled, failed readiness probes, ImagePullBackOff) and, for each one, work through a full diagnostic checklist before taking action.
+          As in the earlier labs, write the prompt as a Markdown file in the workspace, then hand that file to Bob. It asks for JUnit 5 integration tests covering the full payment lifecycle (authorization, capture, refund) plus the failure scenarios, and a coverage report at the end.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>generate-tests.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · Generate Tests</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt0">Generate JUnit 5 integration tests for the payment API.
+Cover: successful authorization, declined card, capture after auth,
+refund after capture, invalid card number, duplicate refund attempt.
+Use MockMvc. Assert HTTP status codes and response body fields.
+Target 80% code coverage.
+
+Use Java 17. Generate tests for the payment-app-java17 directory.
+
+Configure JaCoCo in the pom.xml to measure coverage, then summarize
+the JaCoCo results in a report named PaymentApiIntegrationTestCoverageReport.md.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, then add <code>generate-tests.md</code> as context with <code>@</code> → <strong>Add File</strong> and send the message.</li>
+          </ol>
         </div>
 
-        <div class="prompt-card" style="margin-top:14px;">
-          <div class="prompt-header" onclick="togglePrompt(this)">
-            <span class="prompt-label">Prompt 6a · Auto-Heal</span>
-            <div style="display:flex;gap:8px;align-items:center">
-              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
-              <span class="prompt-toggle">▼</span>
-            </div>
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
           </div>
-          <div class="prompt-body" id="prompt0">Monitor the bob-demo namespace for unhealthy pods.
-Check for: CrashLoopBackOff, OOMKilled, failed readiness probes,
-and ImagePullBackOff. For any unhealthy pod:
-1. Pull the last 50 lines of logs
-2. Check recent events (oc describe pod)
-3. Check resource usage vs limits
-4. Diagnose the root cause
-5. If it's CrashLoopBackOff, roll back to the previous image
-6. If it's OOMKilled, recommend new memory limits
-7. Report all findings</div>
+          <strong>JaCoCo</strong> (Java Code Coverage) is a library that measures how much of your code is exercised by tests; it generates the coverage percentage report. <strong>MockMvc</strong> is a Spring testing framework that lets you simulate HTTP requests to your REST endpoints without starting a real server, making tests fast and isolated.
         </div>
       </div>
     </div>
@@ -673,26 +677,10 @@ and ImagePullBackOff. For any unhealthy pod:
     <div class="step">
       <div class="step-number">2</div>
       <div class="step-content">
-        <div class="step-title">Review Bob's diagnosis and actions</div>
+        <div class="step-title">Watch Bob work through the task</div>
         <div class="step-body">
-          Watch Bob work through the checklist and read the findings report it produces:
-        </div>
-        <div class="output-list" style="margin-top:12px;">
-          <div class="output-item"><span class="output-icon">→</span>Pod logs (last 50 lines) and recent events from <code>oc describe pod</code></div>
-          <div class="output-item"><span class="output-icon">→</span>Resource usage compared against limits</div>
-          <div class="output-item"><span class="output-icon">→</span>A root-cause diagnosis for each unhealthy pod</div>
-          <div class="output-item"><span class="output-icon">→</span>Actions taken: rollback to the previous image for CrashLoopBackOff, or recommended new memory limits for OOMKilled</div>
-        </div>
-        <div class="step-body">
-          This is the heart of the lab: Bob isn't just running scripts, it's reasoning from evidence (logs, events, resource data) to a root cause, then choosing the right remediation.
-        </div>
-
-        <div class="stage-tip">
-          <div class="tip-header">
-            <span class="tip-icon">💡</span>
-            <span class="tip-label">Tip</span>
-          </div>
-          If all pods are healthy, Bob will simply report that nothing needs healing. You can break a pod on purpose (for example, set a memory limit too low) and re-run the prompt to see the full diagnose-and-fix loop.
+          Before writing any code, Bob will first <strong>read the existing source files</strong> to gather context; it needs to understand the controllers, models, and endpoints before it can write meaningful tests.<br><br>
+          Once it has enough context, Bob will create a <strong>to-do list</strong> and work through each item: files are created one by one and checked off as complete.
         </div>
       </div>
     </div>
@@ -701,25 +689,17 @@ and ImagePullBackOff. For any unhealthy pod:
     <div class="step">
       <div class="step-number">3</div>
       <div class="step-content">
-        <div class="step-title">Run the incident analysis (backup)</div>
+        <div class="step-title">Review the coverage report</div>
         <div class="step-body">
-          If you have time, send the backup prompt below. Instead of reacting to a live failure, it asks Bob to mine a week of deployment history for <code>payment-service</code>, spot failure patterns, and recommend changes to the deployment strategy. This is proactive SRE work: learning from incidents instead of just resolving them.
+          Open <code>PaymentApiIntegrationTestCoverageReport.md</code> and review the summary: pass/fail counts, coverage percentage, and any flagged edge cases. This is the kind of output a developer would normally spend hours producing manually.
         </div>
 
-        <div class="prompt-card" style="margin-top:14px;">
-          <div class="prompt-header" onclick="togglePrompt(this)">
-            <span class="prompt-label">Prompt 6b · Incident Analysis (backup)</span>
-            <div style="display:flex;gap:8px;align-items:center">
-              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
-              <span class="prompt-toggle">▼</span>
-            </div>
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
           </div>
-          <div class="prompt-body" id="prompt1">Analyze the last 7 days of deployment history for payment-service.
-Show: deployment time, image version, rollout duration,
-any failed rollouts and their causes.
-Identify patterns: are failures happening during specific hours?
-After specific types of changes? Recommend improvements
-to the deployment strategy based on the data.</div>
+          You should expect all tests to pass ✅.
         </div>
       </div>
     </div>
@@ -731,17 +711,17 @@ to the deployment strategy based on the data.</div>
         <span class="tp-label">WHAT YOU ACHIEVED</span>
       </div>
       <ul class="tp-list tp-check">
-        <li>Bob <strong>monitored the <code>bob-demo</code> namespace</strong> for unhealthy pods: CrashLoopBackOff, OOMKilled, failed readiness probes, and ImagePullBackOff.</li>
-        <li>For each problem it <strong>gathered evidence</strong> (logs, events, resource usage vs limits) and <strong>diagnosed the root cause</strong>, rather than just restarting things.</li>
-        <li>Bob <strong>took the right remediation</strong>: rolling back to a previous image for crash loops, recommending new memory limits for OOMKilled pods, and reporting all findings.</li>
-        <li>With the backup prompt, Bob <strong>analyzed deployment history</strong> for failure patterns and recommended improvements to the deployment strategy.</li>
-        <li>The takeaway: <strong>this is auto-heal as an intelligent agent</strong>; the same diagnose-fix-report loop that pages an on-call engineer today can run unattended.</li>
+        <li>Bob generated a <strong>full JUnit 5 integration test suite</strong> for the payment API: happy paths, edge cases, and failure scenarios, with no manual test writing.</li>
+        <li>You watched Bob's workflow: it <strong>read the source files first</strong> to understand controllers, models, and endpoints, then worked through a to-do list item by item.</li>
+        <li>The tests use <strong>MockMvc</strong> to simulate HTTP requests and assert status codes and response bodies, with <strong>JaCoCo</strong> measuring coverage against the 80% target.</li>
+        <li>You reviewed <code>PaymentApiIntegrationTestCoverageReport.md</code>: pass/fail counts, coverage percentage, and flagged edge cases.</li>
+        <li>The takeaway: <strong>validation is built into the workflow</strong>; the code is proven correct before it moves further down the pipeline.</li>
       </ul>
     </div>
 
     <div class="nav-buttons">
-      <a href="stage-5.html" class="nav-btn">← Previous Lab</a>
-      <a href="stage-7.html" class="nav-btn">Next: Lab 7 →</a>
+      <a href="lab-2-java-modernization.html" class="nav-btn">← Previous Lab</a>
+      <a href="lab-4-security-scanning.html" class="nav-btn">Next: Lab 4 →</a>
     </div>
   </div>
 

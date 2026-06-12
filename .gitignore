@@ -1,11 +1,25 @@
 # OS junk
 .DS_Store
 
-# Labs not yet finalized: holding back until reviewed
-# index.html              # Workshop intro
-stages/stage-3.html     # Infra as Code
-stages/stage-4.html     # Deploy to OpenShift
-stages/stage-4b.html    # CI/CD Pipeline
-stages/stage-5.html     # Day-2 SRE Ops
-stages/stage-6.html   # Auto-Heal & Diagnose
-stages/stage-7.html   # Backup Prompts
+# Hands-on labs participants will try (kept tracked / surfaced):
+#   stages/lab-1-build-app.html          Build the App
+#   stages/lab-3-generate-tests.html     Generate Tests
+#   stages/lab-4-security-scanning.html  Security Scan
+#   stages/lab-6-deploy-openshift.html   Deploy to OpenShift
+
+# Labs not yet finalized: holding back until reviewed.
+# NOTE: .gitignore has no inline comments, so each pattern is on its own line.
+
+# Infra as Code
+stages/lab-5-infra-as-code.html
+# CI/CD Pipeline
+stages/lab-7-cicd-pipeline.html
+# Day-2 SRE Ops
+stages/lab-8-day2-sre-ops.html
+# Auto-Heal & Diagnose
+stages/lab-9-auto-heal.html
+# Backup Prompts
+stages/lab-10-backup-prompts.html
+# Instructor cluster setup
+stages/instructor-openshift-setup.html
+change-plan-if-one-cluster.md

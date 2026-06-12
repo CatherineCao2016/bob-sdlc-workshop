@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 6 - Deploy to OpenShift | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  /* Original container styles below */
+  .old-container-placeholder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    flex: 1;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .output-icon {
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 6 of 10</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-list">
+        <li class="toc-item">
+          <a href="../index.html" class="toc-link">
+            <span class="toc-num">0</span>
+            <span class="toc-label">Workshop Intro</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-1-build-app.html" class="toc-link">
+            <span class="toc-num">1</span>
+            <span class="toc-label">Bob Builds the App</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-2-java-modernization.html" class="toc-link">
+            <span class="toc-num">2</span>
+            <span class="toc-label">Java Modernization</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-3-generate-tests.html" class="toc-link">
+            <span class="toc-num">3</span>
+            <span class="toc-label">Generate Tests</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-4-security-scanning.html" class="toc-link">
+            <span class="toc-num">4</span>
+            <span class="toc-label">Security Scanning</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-5-infra-as-code.html" class="toc-link">
+            <span class="toc-num">5</span>
+            <span class="toc-label">Infra as Code</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-6-deploy-openshift.html" class="toc-link active">
+            <span class="toc-num">6</span>
+            <span class="toc-label">Deploy to OpenShift</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-7-cicd-pipeline.html" class="toc-link">
+            <span class="toc-num">7</span>
+            <span class="toc-label">CI/CD Pipeline</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="lab-8-day2-sre-ops.html" class="toc-link">
+            <span class="toc-num">8</span>
+            <span class="toc-label">Day-2 SRE Ops</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="instructor-openshift-setup.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Instructor: Cluster Setup</span>
+          </a>
+        </li>
+        <li class="toc-item">
+          <a href="install-oc-cli.html" class="toc-link">
+            <span class="toc-num">★</span>
+            <span class="toc-label toc-optional">Install the oc CLI</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 6 · Deploy</div>
+      <div class="stage-title">Deploy to OpenShift</div>
+      <div class="stage-desc">Manual deploy to validate the cluster before automating with CI/CD</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Lab 3 completed</strong>, so you have the <code>payment-app-java17</code> project (with its <code>infra/</code> files) open in the Bob IDE.</li>
+        <li><strong>Access to a live OpenShift cluster</strong>: your instructor will provide access (a shared login).</li>
+        <li><strong>Your assigned namespace suffix</strong> (for example <code>bob-1</code>), given to you by your instructor. The deploy script creates <code>deploy-test-&lt;suffix&gt;</code> for you; everyone shares the same login, so using your own assigned suffix is what keeps your work separate from everyone else's. Use it consistently throughout this lab.</li>
+        <li>The <strong><code>oc</code> CLI</strong> installed, plus a login token for your cluster. This is the only local tool you need: no Docker, Podman, or Java required, since the image builds on the cluster. The <code>oc</code> CLI runs the same on macOS, Windows, and Linux. Need it? See <a href="install-oc-cli.html" style="color:var(--accent);font-weight:600;">Install the oc CLI</a>.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li>Before we automate anything, we deploy manually first. This is intentional: it lets us validate the cluster setup, catch security context issues, and confirm the app actually runs before a pipeline ever touches it.</li>
+        <li>We build the image <strong>on the cluster</strong>, not on your laptop. OpenShift builds it server-side from the existing Dockerfile, so the workflow is identical whether you're on an Intel Mac, an Apple Silicon Mac, Windows, or Linux. No Docker, Podman, or local Java needed: just the <code>oc</code> CLI.</li>
+        <li>Bob generates the deployment steps. We run them, watch what happens, and fix any issues together, live, with Bob's help. This is where real-world problems get solved.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob to generate the deployment steps</div>
+        <div class="step-body">
+          As in the earlier labs, write the prompt as a Markdown file in the workspace, then hand that file to Bob. It asks Bob for the <code>oc</code> commands to build the image <strong>on the cluster</strong> from the existing multi-stage <code>Dockerfile</code> and deploy the app into your own namespace. Because the build runs server-side, the same commands work on any operating system.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>deploy-openshift.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · Generate Deployment Steps</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt0">Before giving me any commands, ask me for my unique namespace suffix and wait for my answer. Then substitute it into deploy-test-&lt;suffix&gt; in every command below.
+
+Give me the oc commands to deploy the app in payment-app-java17 to OpenShift in namespace deploy-test-&lt;suffix&gt;.
+
+Check if the namespace deploy-test-&lt;suffix&gt; exists, if not create the namespace first.
+
+Build the image on the cluster (server-side) from the existing multi-stage Dockerfile in payment-app-java17. Do not build the image locally with Docker or Podman, so the steps work on any OS. Use a binary Docker-strategy build:
+- oc new-build --name=payment-app --strategy=docker --binary --to=payment-app:latest -n deploy-test-&lt;suffix&gt;
+- oc start-build payment-app --from-dir=payment-app-java17 --follow -n deploy-test-&lt;suffix&gt;
+
+Then deploy the built image and expose a route:
+- oc new-app payment-app -n deploy-test-&lt;suffix&gt;
+- oc create route edge payment-app --service=payment-app --port=8081 --insecure-policy=Redirect -n deploy-test-&lt;suffix&gt;
+
+Use an **edge (HTTPS) route**, not `oc expose svc` (which creates an HTTP-only route). Browsers silently upgrade `http://` to `https://`, and the router returns a 503 "Application is not available" for an HTTPS request to an HTTP-only host. The app listens on port **8081** (per the Dockerfile's `EXPOSE`), so the route must point at 8081.
+
+Explain each command briefly as a comment, and tell me how to get the final app URL (it will be `https://`).
+
+Create a deployment script named "deploy-to-openshift.sh" that runs all the commands in sequence.
+
+The script MUST include a preflight check, before any build steps, that verifies the cluster's internal image registry is Ready. The build pushes its output image to the internal registry, so if the registry is not up, the build fails with a misleading `InvalidOutputReference` error. The preflight check must:
+- Confirm at least one image registry pod in the `openshift-image-registry` namespace is `Running` and Ready (not just the `cluster-image-registry-operator` pod). Use the label selector `-l docker-registry=default` to find the registry pods — do not grep by pod name, which is brittle.
+- Fail fast with a clear, actionable message if the registry is not Ready, pointing the user at the storage/registry fix below — instead of letting the build fail cryptically later.
+- Detection only: the preflight reports the problem and the `emptyDir`/PVC fix; it MUST NOT auto-patch the cluster registry config (that is a cluster-admin action, not the script's job).
+
+The script MUST ALSO include the following (each corresponds to a gotcha documented below — implement them when generating the script, do not assume a prior script already does):
+- **Idempotent re-run:** before `oc new-build`, delete any existing BuildConfig AND ImageStream for the app (suppress "not found" errors), so re-running the script doesn't fail with "already exists". See *BuildConfig Already Exists* and *ImageStreamTag Already Exists*.
+- **Post-build tag verification:** immediately after `oc start-build`, confirm the ImageStream actually received a tag (`oc get is &lt;app&gt; -o jsonpath='{.status.tags[*].tag}'`). If empty, the build failed before pushing — fail fast with the build-log commands instead of letting `oc new-app` fail later with "image stream has no tags". See *PullBuilderImageFailed*.
+- **Service port correctness:** after `oc new-app`, ensure the Service targets the container's actual port (the Dockerfile's `EXPOSE` value, `8081` here) rather than the `oc new-app` default of `8080`; patch it if needed. See *Route returns 503 … EMPTY endpoints*.
+- **Edge (HTTPS) route:** create the route with `oc create route edge … --insecure-policy=Redirect`, not `oc expose svc`. See *Route returns 503 … HTTP-only route*.
+- **Final URL:** print the application URL as `https://` (the edge route redirects http→https).
+
+Assumptions the script may rely on (state them in a header comment): the user is already logged in to the target cluster (`oc login` done) and `oc` is on PATH.
+
+## Common Gotchas
+
+### InvalidOutputReference Error
+**Error:** `Error from server (BadRequest): build payment-app-1 failed: InvalidOutputReference: Output image could not be resolved.`
+
+This error is misleading — it points at the *output image*, but there are two distinct causes. Check them in this order.
+
+**Cause 1 (most common): the cluster's internal image registry is not Ready.**
+The build needs somewhere to push its output image — the internal registry in the `openshift-image-registry` namespace. If that registry isn't up, the ImageStream never gets a `status.dockerImageRepository`, so the build's output target can't be resolved.
+
+**One-glance diagnostic:** run `oc get is payment-app -n deploy-test-&lt;suffix&gt;` and look at the **IMAGE REPOSITORY** column.
+- **Empty** → the registry is the problem (this cause). Do NOT debug your BuildConfig.
+- **Populated** (e.g. `image-registry.openshift-image-registry.svc:5000/...`) → registry is fine; see Cause 2.
+
+**Confirm the registry state:**
+```bash
+oc get pods -n openshift-image-registry
+```
+You need at least one `image-registry-*` pod at `1/1 Running` — not just `cluster-image-registry-operator`. If the `image-registry-*` pods are `0/1`, they are not Ready.
+
+**Most common root cause:** the registry has no storage backend configured, so its pod never becomes Ready. Fix for a test/workshop cluster:
+```bash
+oc patch configs.imageregistry.operator.openshift.io/cluster --type merge \
+  -p '{"spec":{"managementState":"Managed","storage":{"emptyDir":{}}}}'
+```
+Then wait until an `image-registry-*` pod reports `1/1 Running`:
+```bash
+oc get pods -n openshift-image-registry -w
+```
+⚠️ `emptyDir` is **ephemeral** — images are lost if the registry pod restarts or reschedules. Fine for `deploy-test-*` namespaces, not for production. For persistence use a PVC instead:
+```bash
+oc patch configs.imageregistry.operator.openshift.io/cluster --type merge \
+  -p '{"spec":{"managementState":"Managed","storage":{"pvc":{"claim":""}}}}'
+```
+(Empty `claim` auto-creates a PVC, assuming a default StorageClass exists.)
+
+The deployment script's preflight check catches this case before the build runs.
+
+**Cause 2: the `oc new-build` command was missing the `--to` flag.**
+If the IMAGE REPOSITORY column is populated but the build still fails, the BuildConfig may have no output target. Always include `--to=&lt;image-name&gt;:latest` on a binary build:
+```bash
+oc new-build --name=payment-app --strategy=docker --binary --to=payment-app:latest -n deploy-test-&lt;suffix&gt;
+```
+The `--to` flag tells OpenShift to push the built image to an ImageStream. Without it, OpenShift doesn't know where to store the resulting container image.
+
+### BuildConfig Already Exists Error
+**Error:** `error: buildconfigs.build.openshift.io "payment-app" already exists`
+
+**Cause:** A BuildConfig with the same name already exists from a previous deployment attempt. The `oc new-build` command cannot create a resource that already exists.
+
+**Solution:** Delete the existing BuildConfig before creating a new one, and also delete the ImageStream (see next gotcha). The deployment script handles this automatically by deleting both before recreating.
+
+### ImageStreamTag Already Exists Error
+**Error:** `error: imagestreamtag.image.openshift.io "payment-app:latest" already exists`
+
+**Cause:** When deleting a BuildConfig, the associated ImageStream is NOT automatically deleted. When `oc new-build` runs again, it fails because the ImageStreamTag still exists.
+
+**Solution (safe for scripts):** Delete both the BuildConfig AND the ImageStream, suppressing "not found" errors:
+```bash
+oc delete bc payment-app -n deploy-test-&lt;suffix&gt; 2&gt;/dev/null || true
+oc delete is payment-app -n deploy-test-&lt;suffix&gt; 2&gt;/dev/null || true
+sleep 2
+oc new-build --name=payment-app --strategy=docker --binary --to=payment-app:latest -n deploy-test-&lt;suffix&gt;
+```
+
+### PullBuilderImageFailed / "image stream has no tags"
+**Errors (two faces of the same problem):**
+- Build: `Failed (PullBuilderImageFailed)` ... `reading manifest ... manifest unknown`
+- Deploy: `oc new-app` → `error: no tags found on matching image stream`
+
+**Cause:** The build **failed before pushing an image**, so the ImageStream stayed empty. The most common reason is a **base image tag in the Dockerfile that doesn't exist** (e.g. Docker Hub removed the `openjdk`-based Maven tags, so `maven:3.9-openjdk-17-slim` returns `manifest unknown`).
+
+**Diagnose:**
+```bash
+oc get builds -n deploy-test-&lt;suffix&gt;
+oc logs build/payment-app-1 -n deploy-test-&lt;suffix&gt; --tail=40
+oc get is payment-app -n deploy-test-&lt;suffix&gt; -o jsonpath='{.status.tags[*].tag}{"\n"}'
+```
+
+**Solution:** Use a base image tag that exists, fully-qualified with `docker.io/library/`:
+```dockerfile
+# Bad  (removed from Docker Hub):
+# FROM maven:3.9-openjdk-17-slim AS build
+# Good (Eclipse Temurin replaced the OpenJDK builds):
+FROM docker.io/library/maven:3.9-eclipse-temurin-17 AS build
+```
+The deployment script verifies the ImageStream has a tag immediately after the build and fails fast if it doesn't.
+
+### Route returns 503 "Application is not available" (HTTP-only route)
+**Symptom:** The pod is `1/1 Running`, the Service has endpoints, ports line up — yet the route URL shows the router's **"Application is not available"** page (503). `curl -i http://&lt;host&gt;/` returns **200 + HTML**, but the browser fails.
+
+**Cause:** `oc expose svc/payment-app` creates an **HTTP-only route** with no TLS. Browsers silently upgrade `http://` to `https://`; with no matching TLS route the router returns 503.
+
+**Solution:** Use an **edge-terminated (HTTPS) route** that redirects HTTP→HTTPS. Substitute `&lt;app-port&gt;` with the container's port (the Dockerfile's `EXPOSE` value):
+```bash
+oc delete route &lt;app&gt; -n deploy-test-&lt;suffix&gt;
+oc create route edge &lt;app&gt; \
+  --service=&lt;app&gt; --port=&lt;app-port&gt; \
+  --insecure-policy=Redirect -n deploy-test-&lt;suffix&gt;
+oc get route &lt;app&gt; -n deploy-test-&lt;suffix&gt; -o jsonpath='https://{.spec.host}/{"\n"}'
+```
+
+**Related — 503 with EMPTY endpoints (port mismatch):** If `oc get endpoints` is *empty*, `oc new-app` defaulted the Service to a port the app isn't listening on (commonly 8080). Set it to the container's actual port:
+```bash
+oc patch svc &lt;app&gt; -n deploy-test-&lt;suffix&gt; --type merge \
+  -p '{"spec":{"ports":[{"name":"&lt;app-port&gt;-tcp","port":&lt;app-port&gt;,"targetPort":&lt;app-port&gt;,"protocol":"TCP"}]}}'
+```
+
+&gt; In this repo's deployment, `&lt;app&gt;` is `payment-app` and `&lt;app-port&gt;` is `8081` (from `EXPOSE 8081` in `payment-app-java17/Dockerfile`). Always confirm the port from the Dockerfile rather than assuming a default.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, then add <code>deploy-openshift.md</code> as context with <code>@</code> → <strong>Add File</strong> and send the message. Bob will ask for your namespace suffix first, then generate the <code>oc</code> commands.
+              <div class="stage-tip">
+                <div class="tip-header">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-label">How to structure your spec file</span>
+                </div>
+                A well-structured spec file is what makes an agent work efficiently. The more your spec pins down <strong>what good output looks like</strong>, the <strong>constraints it must hold to</strong>, and the <strong>failure modes to avoid</strong>, the less the agent has to guess, and the fewer rounds of back-and-forth you need.
+<br><br>
+                A vague, few-line prompt leaves too much open: the agent fills the gaps with reasonable-but-different choices each time, so results vary and edge cases get rediscovered the hard way. A spec that states intent, lists explicit requirements, and names known gotchas up front narrows that space, so the agent converges on the same working result.
+<br><br>
+                That is why this format produces more consistent output and fewer errors: a clear, complete spec front-loads the thinking, instead of leaving the agent to improvise and you to debug.
+<br><br>
+                Curious how much it matters? Try the <a href="../prompt/deploy-to-os-before.md" target="_blank" style="color:var(--accent);font-weight:600;">bare-bones version of this prompt</a> instead, run it through Bob, and compare the two processes: how many follow-ups each takes, where each one stalls, and how close the result is to working on the first try.
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Log in to the cluster and run the steps</div>
+        <div class="step-body">
+          First, log in to the cluster (works the same in any terminal: macOS Terminal, Windows PowerShell, or Linux shell):<br><br>
+          <code>oc login --token=&lt;your-token&gt; --server=&lt;cluster_url&gt;</code><br><br>
+          Then run the <code>deploy-to-openshift.sh</code> script Bob generated. After logging in, that's the only thing you need to run: it executes all the <code>oc</code> commands in order, with the preflight and verification checks built in. Make it executable and run it:<br><br>
+          <code>chmod +x deploy-to-openshift.sh && ./deploy-to-openshift.sh</code><br><br>
+          Watch the build stream from the cluster as it runs.
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Troubleshoot with Bob, then fold it back into the spec</span>
+          </div>
+          If anything fails, work through it with Bob live. Share the error as context to Bob, give it pointers on what you expected to happen, and let it propose the fix. Then re-run the script and repeat, sharing each new error back, until you get a working URL for the deployed app.
+<br><br>
+          Once it works, ask Bob to <strong>wrap the findings and gotchas back into your spec, a skill, or a reference guide</strong>, so the fixes you just discovered live become a durable artifact instead of staying in your terminal scrollback. Closing that loop, feeding real failures back into the spec, skill, or guide, is exactly how a rough prompt becomes a reliable one, and it means the next person benefits from your experimentation instead of rediscovering the same gotchas from scratch.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Review what Bob delivered</div>
+        <div class="step-body">
+          Once the script finishes, you have:
+        </div>
+        <div class="output-list" style="margin-top:12px;">
+          <div class="output-item"><span class="output-icon">→</span>payment-app image built on the cluster and stored in your namespace's image stream</div>
+          <div class="output-item"><span class="output-icon">→</span>payment-app running in your deploy-test-&lt;suffix&gt; namespace, with an edge (HTTPS) route</div>
+        </div>
+        <div class="step-body">
+          The script prints the <strong>deployed app URL</strong> (an <code>https://</code> link) as its last line. Open that URL in a browser and interact with the deployed payment app, confirming it's up and serving traffic live from the cluster.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>Bob generated the <strong><code>oc</code> deployment steps</strong>: a server-side image build from the existing multi-stage Dockerfile, then a deployment and route in your own namespace, with each command explained.</li>
+        <li>You <strong>logged in to the cluster and ran the steps</strong>, deploying the payment app to OpenShift for the first time, with the image built on the cluster so the workflow worked identically on any laptop.</li>
+        <li>Any failures were <strong>debugged live with Bob's help</strong>, validating the cluster setup and catching issues before automation.</li>
+        <li>You <strong>confirmed the app is running</strong> in your <code>deploy-test-&lt;suffix&gt;</code> namespace via its route, isolated from other users on the shared cluster.</li>
+        <li>The takeaway: <strong>deploy manually first to validate the path</strong>; Lab 7 automates the same flow with a CI/CD pipeline.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="lab-5-infra-as-code.html" class="nav-btn">← Previous Lab</a>
+      <a href="lab-7-cicd-pipeline.html" class="nav-btn">Next: Lab 7 →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+</body>
+</html>
