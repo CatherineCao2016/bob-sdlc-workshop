@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referee Evaluation · Terraform Skill A/B | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<script src="assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .container {
+    flex: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+  }
+
+  .stage-header { margin-bottom: 24px; }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title { font-size: 30px; font-weight: 700; margin-bottom: 10px; }
+  .stage-desc { font-size: 15px; color: var(--muted); line-height: 1.6; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 32px 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  p { font-size: 13px; line-height: 1.7; margin: 10px 0; }
+
+  code {
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    background: var(--surface2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+
+  .win { color: var(--accent); font-weight: 600; }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 16px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .note-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent2);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  ol { margin: 8px 0 8px 20px; }
+  ol li { font-size: 13px; line-height: 1.7; margin-bottom: 6px; }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Referee Evaluation</span>
+      <a href="index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 5 · Independent Evaluation</div>
+      <div class="stage-title">Referee Evaluation: Terraform Skill A/B Result</div>
+      <div class="stage-desc">
+        <strong>Subject:</strong> <code>terraform-baseline/</code> (no skill) vs <code>terraform/</code> (HashiCorp <code>terraform-style-guide</code> skill loaded).<br>
+        <strong>Method:</strong> Both directories were generated from an identical prompt; the loaded skill is the only intended variable. This evaluation was produced by an independent frontier model acting as referee, with every claim checked against the files and all CLI results reproduced (Terraform v1.14.5).
+      </div>
+    </div>
+
+    <div class="section-label">1 · Reproduced CLI Results</div>
+    <table>
+      <thead>
+        <tr><th>Check</th><th>Baseline</th><th>Skilled</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>terraform init -backend=false</code></td><td>passes</td><td>passes</td></tr>
+        <tr><td><code>terraform validate</code></td><td><strong>valid</strong></td><td><strong>valid</strong></td></tr>
+        <tr><td><code>terraform fmt -check -recursive</code></td><td><strong>fails (exit 3)</strong></td><td><strong>clean (exit 0)</strong></td></tr>
+        <tr><td><code>validation {}</code> blocks present</td><td>0</td><td>0</td></tr>
+        <tr><td>liveness + readiness probes</td><td>present</td><td>present</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Reading:</strong> Both configurations are valid HCL, so <code>validate</code> is not a differentiator. The only CLI check that separates the two is <code>fmt -check</code>.</p>
+
+    <div class="section-label">2 · Style-Guide Dimensions (the skill's responsibility)</div>
+    <table>
+      <thead>
+        <tr><th>Dimension</th><th>Baseline</th><th>Skilled</th><th>Winner</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Formatting (<code>fmt</code>)</td><td>trailing whitespace in nested blocks</td><td>canonical</td><td class="win">Skilled</td></tr>
+        <tr><td>Provider / version file layout</td><td><code>terraform</code> + <code>provider</code> blocks inside <code>main.tf</code></td><td>dedicated <code>terraform.tf</code> + <code>providers.tf</code></td><td class="win">Skilled</td></tr>
+        <tr><td>Provider pinning</td><td><code>kubernetes ~> 2.23</code>, TF <code>>= 1.0</code></td><td><code>kubernetes ~> 2.35</code>, TF <code>>= 1.14</code></td><td class="win">Skilled</td></tr>
+        <tr><td>Resource naming</td><td>mixed (<code>payment_app</code>, <code>postgres</code>, <code>postgres_pvc</code>)</td><td>consistent (<code>bob_demo</code>, <code>postgresql</code>)</td><td class="win">Skilled</td></tr>
+        <tr><td>Quota parameterization</td><td>values hardcoded in the resource</td><td>exposed as <code>resource_quota_*</code> variables</td><td class="win">Skilled</td></tr>
+        <tr><td>Variable typing + descriptions</td><td>present</td><td>present</td><td>Tie</td></tr>
+        <tr><td>Variable validation</td><td>none</td><td>none</td><td>Neither</td></tr>
+      </tbody>
+    </table>
+    <p>On every dimension the HashiCorp Terraform Style Guide actually governs, the skilled output is equal or better, and it is the only one that passes <code>fmt -check</code>.</p>
+
+    <div class="section-label">3 · Operational Dimensions (NOT governed by a style guide)</div>
+    <table>
+      <thead>
+        <tr><th>Dimension</th><th>Baseline</th><th>Skilled</th><th>Winner</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>PGDATA</code> subpath (initdb safety)</td><td>sets <code>PGDATA=/var/lib/postgresql/data/pgdata</code></td><td>not set</td><td class="win">Baseline</td></tr>
+        <tr><td>Connection-string output</td><td>present, <code>sensitive = true</code></td><td>absent</td><td class="win">Baseline</td></tr>
+        <tr><td>PVC bind behavior</td><td><code>wait_until_bound = false</code></td><td>default</td><td class="win">Baseline</td></tr>
+        <tr><td><code>.gitignore</code> lock file</td><td>ignores <code>.terraform.lock.hcl</code> (not recommended)</td><td>commits it (recommended)</td><td class="win">Skilled</td></tr>
+        <tr><td>Sensitivity breadth</td><td>marks user + connection string sensitive</td><td>marks only password</td><td>Mixed</td></tr>
+      </tbody>
+    </table>
+    <p>The skilled version is <strong>not a strict superset</strong>: it dropped the <code>PGDATA</code> subpath and the sensitive connection-string output. These are Kubernetes/Postgres operational concerns, orthogonal to a Terraform <em>style</em> guide, so the omissions are expected rather than a skill defect.</p>
+
+    <div class="section-label">4 · Verdict</div>
+    <p>For the question under test, <em>"does the style-guide skill make the agent write more style-guide-compliant Terraform?"</em>, the answer is <strong>yes, clearly and verifiably</strong>. The skilled run wins on formatting, file organization, provider pinning, naming, and parameterization, and is the only one that passes <code>fmt -check</code>.</p>
+    <p>Two honest qualifiers belong in any readout:</p>
+    <ol>
+      <li>The skill improves <strong>style and structure, not operational completeness</strong>. A reviewer would still flag the dropped <code>PGDATA</code> handling and connection-string output in the skilled version.</li>
+      <li><code>terraform validate</code> passes for <strong>both</strong>, and <strong>neither</strong> adds <code>validation {}</code> blocks. Treat <code>validate</code> as proof of deploy-readiness, and treat <code>fmt -check</code> plus the side-by-side read as the real evidence of the skill's effect.</li>
+    </ol>
+
+    <div class="stage-note">
+      <span class="note-label">Net</span>
+      A fair, attributable win for the skill on style, with the standard reminder that AI-generated infrastructure code still warrants an operational review before it ships.
+    </div>
+
+    <div class="nav-buttons">
+      <a href="stages/lab-5-infra-as-code.html" class="nav-btn">← Back to Lab 5</a>
+      <a href="index.html" class="nav-btn">↑ Home</a>
+    </div>
+  </div>
+</body>
+</html>

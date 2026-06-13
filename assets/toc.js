@@ -18,10 +18,11 @@
     { num: "2", label: "Java Modernization",       path: "stages/lab-2-java-modernization.html",   badge: "try" },
     { num: "3", label: "Generate Tests",           path: "stages/lab-3-generate-tests.html",       badge: "try" },
     { num: "4", label: "Security Scanning",        path: "stages/lab-4-security-scanning.html",     badge: "try" },
-    { num: "5", label: "Infra as Code",            path: "stages/lab-5-infra-as-code.html",         badge: "soon" },
+    { num: "5", label: "Infra as Code",            path: "stages/lab-5-infra-as-code.html",         badge: "try" },
     { num: "6", label: "Deploy to OpenShift",      path: "stages/lab-6-deploy-openshift.html",      badge: "try" },
     { num: "7", label: "CI/CD Pipeline",           path: "stages/lab-7-cicd-pipeline.html",         badge: "soon" },
     { num: "8", label: "Day-2 SRE Ops",            path: "stages/lab-8-day2-sre-ops.html",          badge: "try" },
+    { num: "9", label: "Cost Transparency (Bobalytics)", path: "stages/lab-9-bobalytics.html",      badge: "try" },
     { num: "✓", label: "Workshop Complete",   path: "outro.html" },
     { num: "★", label: "Instructor: Cluster Setup", path: "stages/instructor-openshift-setup.html", optional: true },
     { num: "★", label: "Install the oc CLI",  path: "stages/install-oc-cli.html",              optional: true }
