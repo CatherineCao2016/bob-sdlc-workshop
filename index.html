@@ -21,6 +21,17 @@
     --text: #212529;
     --muted: #495057;
     --stage-colors: #4d94ff, #00d4aa, #a78bfa, #ffb347, #ff6b9d, #50fa7b;
+    --card-bg: #FFFFFF;
+    --text-primary: #212529;
+    --text-secondary: #525252;
+    --text-muted: #6c757d;
+    --stage1-accent: #0F62FE; --stage1-bg: #EDF5FF; --stage1-tag: #D0E2FF;
+    --stage2-accent: #198038; --stage2-bg: #DEFBE6; --stage2-tag: #A7F0BA;
+    --stage3-accent: #B28600; --stage3-bg: #FFF8E1; --stage3-tag: #FFECB3;
+    --stage4-accent: #0072C3; --stage4-bg: #E5F6FF; --stage4-tag: #BAE6FF;
+    --stage5-accent: #6929C4; --stage5-bg: #F6F2FF; --stage5-tag: #E8DAFF;
+    --stage6-accent: #9F1853; --stage6-bg: #FFF0F7; --stage6-tag: #FFD6E8;
+    --lab9-accent: #007d79; --lab9-bg: #D9FBFB;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -366,6 +377,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
+    margin-top: 28px;
     margin-bottom: 20px;
   }
 
@@ -468,6 +480,39 @@
     background: var(--surface2);
     border-color: var(--border);
   }
+
+  /* ---- SDLC Cards (inlined from demo cards) ---- */
+  .pipeline { display: flex; align-items: stretch; gap: 0; justify-content: flex-start; overflow-x: auto; padding: 8px 0 28px; }
+  .pipeline::-webkit-scrollbar { height: 6px; }
+  .pipeline::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
+  .pipeline::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+  .connector { display: flex; align-items: center; flex-shrink: 0; width: 32px; justify-content: center; }
+  .connector svg { width: 24px; height: 24px; color: var(--text-muted); flex-shrink: 0; }
+  .stage-card { flex-shrink: 0; width: 260px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden; text-decoration: none; color: inherit; cursor: pointer; }
+  .stage-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .card-top { padding: 20px 20px 0; }
+  .stage-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .stage-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .card-title { font-size: 17px; font-weight: 700; line-height: 1.3; margin-bottom: 14px; letter-spacing: -0.2px; }
+  .card-body { padding: 0 20px; flex: 1; }
+  .card-body ul { list-style: none; padding: 0; }
+  .card-body li { font-size: 13px; color: var(--text-secondary); line-height: 1.5; padding: 3px 0; padding-left: 16px; position: relative; }
+  .card-body li::before { content: '\203A'; position: absolute; left: 0; font-weight: 700; font-size: 15px; }
+  .card-body li code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+  .card-quote { margin: 16px 20px; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-style: italic; line-height: 1.5; font-weight: 500; }
+  .card-tags { padding: 14px 20px 18px; display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .tag { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.3px; }
+  .stage-1 .stage-label { color: var(--stage1-accent); } .stage-1 .stage-icon { background: var(--stage1-bg); } .stage-1 .card-body li::before { color: var(--stage1-accent); } .stage-1 .card-quote { background: var(--stage1-bg); color: var(--stage1-accent); } .stage-1 .tag { background: var(--stage1-tag); color: var(--stage1-accent); }
+  .stage-2 .stage-label { color: var(--stage2-accent); } .stage-2 .stage-icon { background: var(--stage2-bg); } .stage-2 .card-body li::before { color: var(--stage2-accent); } .stage-2 .card-quote { background: var(--stage2-bg); color: var(--stage2-accent); } .stage-2 .tag { background: var(--stage2-tag); color: var(--stage2-accent); }
+  .stage-3 .stage-label { color: var(--stage3-accent); } .stage-3 .stage-icon { background: var(--stage3-bg); } .stage-3 .card-body li::before { color: var(--stage3-accent); } .stage-3 .card-quote { background: var(--stage3-bg); color: var(--stage3-accent); } .stage-3 .tag { background: var(--stage3-tag); color: var(--stage3-accent); }
+  .stage-4 .stage-label { color: var(--stage4-accent); } .stage-4 .stage-icon { background: var(--stage4-bg); } .stage-4 .card-body li::before { color: var(--stage4-accent); } .stage-4 .card-quote { background: var(--stage4-bg); color: var(--stage4-accent); } .stage-4 .tag { background: var(--stage4-tag); color: var(--stage4-accent); }
+  .stage-5 .stage-label { color: var(--stage5-accent); } .stage-5 .stage-icon { background: var(--stage5-bg); } .stage-5 .card-body li::before { color: var(--stage5-accent); } .stage-5 .card-quote { background: var(--stage5-bg); color: var(--stage5-accent); } .stage-5 .tag { background: var(--stage5-tag); color: var(--stage5-accent); }
+  .stage-6 .stage-label { color: var(--stage6-accent); } .stage-6 .stage-icon { background: var(--stage6-bg); } .stage-6 .card-body li::before { color: var(--stage6-accent); } .stage-6 .card-quote { background: var(--stage6-bg); color: var(--stage6-accent); } .stage-6 .tag { background: var(--stage6-tag); color: var(--stage6-accent); }
+  .lab9-bracket { display: block; text-decoration: none; color: inherit; margin: 4px 0 0; padding: 0 8px; }
+  .lab9-line { height: 18px; border: 2px solid var(--lab9-accent); border-top: none; border-radius: 0 0 14px 14px; opacity: 0.7; }
+  .lab9-label { margin: 14px auto 0; max-width: max-content; display: flex; align-items: center; gap: 10px; background: var(--lab9-bg); color: var(--lab9-accent); border: 1px solid var(--lab9-accent); border-radius: 24px; padding: 9px 18px; font-size: 13px; font-weight: 600; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .lab9-bracket:hover .lab9-label { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,125,121,0.18); }
+  .lab9-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; background: var(--lab9-accent); color: #fff; padding: 3px 9px; border-radius: 12px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -489,7 +534,7 @@
       <div class="stage-header">
       <div class="stage-badge">Lab 0 · Intro</div>
       <div class="stage-title">Workshop Intro</div>
-      <div class="stage-desc">Full SDLC overview: what Bob does, and why it matters</div>
+      <div class="stage-desc">Examples of how Bob helps across the software delivery lifecycle, from build to Day-2 operations</div>
     </div>
 
     <div class="talking-point">
@@ -499,95 +544,182 @@
       </div>
       This workshop walks through the complete software delivery lifecycle (SDLC) using IBM Bob, from building a payment processing application in a single prompt, through security scanning, CI/CD pipeline generation, and OpenShift deployment, to the Day-2 SRE operations that drive daily operational toil. Bob drives every stage intelligently, generating production-ready artifacts that can be executed immediately against live OpenShift clusters.
       <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,102,204,0.2);">
-        <strong style="color: #1a9e4b;">Today you'll get hands-on with 6 labs:</strong>
+        <strong style="color: #1a9e4b;">Today you'll get hands-on with 8 labs:</strong>
         <a href="stages/lab-1-build-app.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Build the App</a> →
         <a href="stages/lab-2-java-modernization.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Java Modernization</a> →
         <a href="stages/lab-3-generate-tests.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Generate Tests</a> →
         <a href="stages/lab-4-security-scanning.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Security Scan</a> →
+        <a href="stages/lab-5-infra-as-code.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Infra as Code</a> →
         <a href="stages/lab-6-deploy-openshift.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Deploy to OpenShift</a> →
+        <a href="stages/lab-7-cicd-pipeline.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">CI/CD Pipeline</a> →
         <a href="stages/lab-8-day2-sre-ops.html" style="color: var(--accent); font-weight: 600; text-decoration: none;">Day-2 SRE Ops</a>.
-        The remaining stages are shown for context and marked <em>Soon</em>.
       </div>
     </div>
 
     <div class="section-label">Visual Lab Overview</div>
     <div class="flow-overview">
-      <div class="flow-track">
-        <div class="flow-node try" style="--nc:#4d94ff">
-          <div class="flow-bubble">
-            <div class="flow-num">1</div>
-            <div class="flow-label">Build App</div>
-            <div class="flow-sub">One prompt → full payment app</div>
-            <span class="flow-try-tag">Hands-on</span>
+      <div class="pipeline">
+
+        <!-- LABS 1-2: Modernize & Build the App -->
+        <a href="stages/lab-1-build-app.html" class="stage-card stage-1">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">🏗️</div> Labs 1–2</div>
+            <div class="card-title">Bob Modernizes &amp; Builds the App</div>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#50fa7b">
-          <div class="flow-bubble">
-            <div class="flow-num">2</div>
-            <div class="flow-label">Java Modernization</div>
-            <div class="flow-sub">Java 11 → 17 · Spring Boot</div>
-            <span class="flow-try-tag">Hands-on</span>
+          <div class="card-body">
+            <ul>
+              <li>Analyze a legacy Java 11 codebase and produce a modernization plan — deprecated APIs, effort &amp; risk, recommended order — reviewed before any change</li>
+              <li>Upgrade to Java 17 + Spring Boot 3.x; adopt records, text blocks, pattern matching</li>
+              <li>Build a complete payment app: Spring Boot REST backend, H2 database, cache, transaction-dashboard frontend</li>
+              <li>Deliver the supporting artifacts too: README, Dockerfile, OpenShift manifest</li>
+              <li>Plan-then-execute, with you approving each step</li>
+            </ul>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#00d4aa">
-          <div class="flow-bubble">
-            <div class="flow-num">3</div>
-            <div class="flow-label">Generate Tests</div>
-            <div class="flow-sub">Full test suite · Edge cases</div>
-            <span class="flow-try-tag">Hands-on</span>
+          <div class="card-quote">"One spec — Bob modernizes the stack and builds a working, deployable app, plan first."</div>
+          <div class="card-tags">
+            <span class="tag">Java 11→17</span>
+            <span class="tag">Spring Boot 3</span>
+            <span class="tag">Dockerfile</span>
+            <span class="tag">OpenShift</span>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#a78bfa">
-          <div class="flow-bubble">
-            <div class="flow-num">4</div>
-            <div class="flow-label">Security Scan</div>
-            <div class="flow-sub">Secrets · CVE · Context analysis</div>
-            <span class="flow-try-tag">Hands-on</span>
+        </a>
+
+        <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+        <!-- LABS 3-4: Test & Secure -->
+        <a href="stages/lab-3-generate-tests.html" class="stage-card stage-2">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">🔒</div> Labs 3–4</div>
+            <div class="card-title">Bob Tests & Secures</div>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#ffb347">
-          <div class="flow-bubble">
-            <div class="flow-num">5</div>
-            <div class="flow-label">Infra as Code</div>
-            <div class="flow-sub">Terraform · Skills</div>
-            <span class="flow-try-tag">Hands-on</span>
+          <div class="card-body">
+            <ul>
+              <li>Generate a full JUnit 5 integration suite: happy paths, edge cases, failure scenarios (MockMvc)</li>
+              <li>Measure coverage with JaCoCo against an 80% target and produce a coverage report</li>
+              <li>Run a contextual security analysis — reasoning about code semantics, not just bad strings</li>
+              <li>Produce SecurityScanReport.md: file, line, severity, and a concrete fix per finding</li>
+              <li>Apply the fixes directly in the IDE, no context switching</li>
+            </ul>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#ff6b9d">
-          <div class="flow-bubble">
-            <div class="flow-num">6</div>
-            <div class="flow-label">Deploy</div>
-            <div class="flow-sub">Manual deploy to OpenShift</div>
-            <span class="flow-try-tag">Hands-on</span>
+          <div class="card-quote">"Tested and security-reviewed before the code ever leaves your laptop."</div>
+          <div class="card-tags">
+            <span class="tag">JUnit 5</span>
+            <span class="tag">MockMvc</span>
+            <span class="tag">JaCoCo</span>
+            <span class="tag">Security Scan</span>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node soon" style="--nc:#ff6b9d">
-          <div class="flow-bubble">
-            <div class="flow-num">7</div>
-            <div class="flow-label">CI/CD Pipeline</div>
-            <div class="flow-sub">GitHub Actions · Auto-deploy</div>
+        </a>
+
+        <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+        <!-- LAB 5: Infra as Code -->
+        <a href="stages/lab-5-infra-as-code.html" class="stage-card stage-3">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">⚙️</div> Lab 5</div>
+            <div class="card-title">Bob Generates Infra as Code</div>
           </div>
-          <div class="flow-arrow">→</div>
-        </div>
-        <div class="flow-node try" style="--nc:#4d94ff">
-          <div class="flow-bubble">
-            <div class="flow-num">8</div>
-            <div class="flow-label">Day-2 SRE Ops</div>
-            <div class="flow-sub">RefreshPOD · Cache · Certs · Vault</div>
-            <span class="flow-try-tag">Hands-on</span>
+          <div class="card-body">
+            <ul>
+              <li>Generate Terraform to provision the OpenShift namespace and PostgreSQL</li>
+              <li>Apply a HashiCorp Terraform skill so Bob writes style-guide-compliant HCL</li>
+              <li>Pinned providers, typed variables, consistent naming, fmt-clean output</li>
+              <li>Validate locally with <code>terraform fmt</code> and <code>terraform validate</code> — no cluster needed</li>
+              <li>An independent referee evaluation scores the before vs. after</li>
+            </ul>
           </div>
-        </div>
+          <div class="card-quote">"Infrastructure defined as code — and a skill makes Bob write it the way your platform team would approve."</div>
+          <div class="card-tags">
+            <span class="tag">Terraform</span>
+            <span class="tag">Skills</span>
+            <span class="tag">OpenShift</span>
+            <span class="tag">IaC</span>
+          </div>
+        </a>
+
+        <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+        <!-- LAB 6: Deploy -->
+        <a href="stages/lab-6-deploy-openshift.html" class="stage-card stage-4">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">🚀</div> Lab 6</div>
+            <div class="card-title">Bob Deploys to<br>OpenShift</div>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>Bob generates the <code>oc</code> deployment steps, each command explained</li>
+              <li>Server-side image build on the cluster from the existing multi-stage Dockerfile — no local Docker</li>
+              <li>Deploy into your own deploy-test-&lt;suffix&gt; namespace with an edge (HTTPS) route on port 8081</li>
+              <li>Log in, run the steps, and debug any failures live with Bob</li>
+              <li>Confirm the app is serving via its route before automating</li>
+            </ul>
+          </div>
+          <div class="card-quote">"Deploy manually first to validate the path — then the pipeline automates it."</div>
+          <div class="card-tags">
+            <span class="tag">OpenShift</span>
+            <span class="tag">oc CLI</span>
+            <span class="tag">Edge Route</span>
+            <span class="tag">On-cluster Build</span>
+          </div>
+        </a>
+
+        <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+        <!-- LAB 7: CI/CD Pipeline -->
+        <a href="stages/lab-7-cicd-pipeline.html" class="stage-card stage-5">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">⚙️</div> Lab 7</div>
+            <div class="card-title">Bob Builds the<br>CI/CD Pipeline</div>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>Generate a single GitHub Actions pipeline: build, JUnit, OWASP, Semgrep — gates skippable with [skip checks]</li>
+              <li>Build on the cluster with <code>oc</code>, auto-deploy to staging (deploy-test-&lt;suffix&gt;), smoke-test the live route</li>
+              <li>Manual approval gate, then promote the exact image to production with <code>oc tag</code> (deploy-prod-&lt;suffix&gt;)</li>
+              <li>A launch-pipeline.sh wires up secrets, the variable, and the approval gate, and pushes — one command to go live</li>
+              <li>Watch the run end to end, then approve the production deploy</li>
+            </ul>
+          </div>
+          <div class="card-quote">"One spec plus one script — a manual deploy becomes a running, gated delivery pipeline."</div>
+          <div class="card-tags">
+            <span class="tag">GitHub Actions</span>
+            <span class="tag">Staging → Prod</span>
+            <span class="tag">oc tag</span>
+            <span class="tag">Quality Gates</span>
+          </div>
+        </a>
+
+        <div class="connector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+        <!-- LAB 8: Day-2 SRE Ops -->
+        <a href="stages/lab-8-day2-sre-ops.html" class="stage-card stage-6">
+          <div class="card-top">
+            <div class="stage-label"><div class="stage-icon">🔧</div> Lab 8</div>
+            <div class="card-title">Bob Assists with<br>Day-2 SRE Ops</div>
+          </div>
+          <div class="card-body">
+            <ul>
+              <li>Day-2 health check — pod status &amp; restarts, rollout, Service endpoints, route reachability, error logs, resource usage</li>
+              <li>Writes a health report (health-report.md) with a healthy / needs-attention verdict</li>
+              <li>Scales the app out under load to 3 replicas — confirms readiness and Service endpoints</li>
+              <li>Verifies the route keeps serving, then scales back down</li>
+              <li>Validates as it goes, reporting anomalies rather than just firing commands</li>
+            </ul>
+          </div>
+          <div class="card-quote">"Describe the outcome you want — Bob drives the cluster and reports what it sees, instead of you memorizing oc commands."</div>
+          <div class="card-tags">
+            <span class="tag">oc CLI</span>
+            <span class="tag">Health Check</span>
+            <span class="tag">Scaling</span>
+            <span class="tag">Day-2</span>
+          </div>
+        </a>
+
+
       </div>
 
       <div class="kv-grid">
         <div class="kv-card">
-          <div class="kv-val">6 labs</div>
+          <div class="kv-val">8 labs</div>
           <div class="kv-key">hands-on today</div>
         </div>
         <div class="kv-card">
@@ -610,23 +742,17 @@
 
       <div class="setup-note">
         <span class="setup-icon">⚙</span>
-        <strong>Prerequisites:</strong> Bob IDE + BobShell on your laptop · access to a Red Hat OpenShift cluster (sandbox, managed, or self-provisioned)
+        <span><strong>Prerequisites:</strong> all you need to start is an <a href="https://bob.ibm.com/trial" target="_blank" style="color:var(--accent);font-weight:600;">IBMid</a> and the <a href="https://bob.ibm.com/download" target="_blank" style="color:var(--accent);font-weight:600;">Bob IDE</a> installed. Each lab lists any additional, lab-specific prerequisites in its <em>Before You Start</em> section, so check the labs you want to try.</span>
       </div>
 
       <div class="tip">
         <span class="tip-icon">💡</span>
-        <strong>Tip:</strong> This workshop uses GitHub Actions and OpenShift, but Bob speaks Jenkins, GitLab CI, Azure DevOps, Tekton, EKS, AKS, and more. The intelligence is the same regardless of the tooling.
+        <strong>Tip:</strong>
+        <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+          <li style="margin-bottom: 6px;">The labs are modular, so pick and choose the ones that interest you. You don't have to run them all in order; if a lab builds on an earlier one, grab the ready-made starter it points to.</li>
+          <li>Short on time, or no access to a cluster or GitHub repo? We recommend Labs 1&ndash;4, they run entirely on your laptop.</li>
+        </ul>
       </div>
-    </div>
-
-    <div class="section-label">Detailed Pipeline Breakdown</div>
-    <div style="background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03)); border: 1px solid rgba(0,102,204,0.2); border-radius: 6px; padding: 16px; margin-bottom: 30px;">
-      <p style="margin-bottom: 12px; color: var(--text); font-size: 13px; line-height: 1.6;">
-        View the full pipeline breakdown, what you'll build in this workshop:
-      </p>
-      <a href="bob-demo-sdlc-cards.html" style="display: inline-block; padding: 10px 18px; background: var(--accent); color: white; text-decoration: none; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; transition: background 0.2s;">
-        View Full Pipeline Breakdown →
-      </a>
     </div>
 
       <div class="nav-buttons">

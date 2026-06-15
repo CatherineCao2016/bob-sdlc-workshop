@@ -20,15 +20,21 @@
     { num: "4", label: "Security Scanning",        path: "stages/lab-4-security-scanning.html",     badge: "try" },
     { num: "5", label: "Infra as Code",            path: "stages/lab-5-infra-as-code.html",         badge: "try" },
     { num: "6", label: "Deploy to OpenShift",      path: "stages/lab-6-deploy-openshift.html",      badge: "try" },
-    { num: "7", label: "CI/CD Pipeline",           path: "stages/lab-7-cicd-pipeline.html",         badge: "soon" },
+    { num: "7", label: "CI/CD Pipeline",           path: "stages/lab-7-cicd-pipeline.html",         badge: "try" },
     { num: "8", label: "Day-2 SRE Ops",            path: "stages/lab-8-day2-sre-ops.html",          badge: "try" },
-    { num: "9", label: "Cost Transparency (Bobalytics)", path: "stages/lab-9-bobalytics.html",      badge: "try" },
     { num: "✓", label: "Workshop Complete",   path: "outro.html" },
-    { num: "★", label: "Instructor: Cluster Setup", path: "stages/instructor-openshift-setup.html", optional: true },
-    { num: "★", label: "Install the oc CLI",  path: "stages/install-oc-cli.html",              optional: true }
+    { divider: "How-Tos & Setup" },
+    { num: "★", label: "Install the oc CLI",        path: "stages/install-oc-cli.html",              optional: true },
+    { num: "★", label: "Install the GitHub CLI",    path: "stages/install-gh-cli.html",              optional: true },
+    { num: "★", label: "Install the Terraform CLI", path: "stages/install-terraform-cli.html",       optional: true }
   ];
 
   var BADGE_TEXT = { try: "Try", soon: "Soon" };
+
+  var DIVIDER_STYLE =
+    "margin-top:14px;padding:14px 20px 8px;border-top:1px solid var(--border);" +
+    "font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.15em;" +
+    "text-transform:uppercase;color:var(--muted);list-style:none;";
 
   function escapeHtml(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -40,6 +46,10 @@
     var current = location.pathname.split("/").pop() || "index.html";
 
     var items = TOC.map(function (item) {
+      if (item.divider) {
+        return '<li class="toc-divider" style="' + DIVIDER_STYLE + '">' +
+          escapeHtml(item.divider) + "</li>";
+      }
       var base = item.path.split("/").pop();
       var isActive = base === current;
       var linkClass = "toc-link" +

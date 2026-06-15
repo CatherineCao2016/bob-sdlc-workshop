@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Install the oc CLI | IBM Bob SDLC Workshop</title>
+<title>Install the GitHub CLI | IBM Bob SDLC Workshop</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/theme.css">
 <script src="../assets/theme-toggle.js"></script>
@@ -75,8 +75,6 @@
     color: var(--muted);
     font-family: 'IBM Plex Mono', monospace;
   }
-
-  .meta span { color: #000000; }
 
   .home-link {
     display: inline-flex;
@@ -367,9 +365,9 @@
     <aside class="sidebar" data-toc></aside>
     <div class="container">
     <div class="stage-header">
-      <div class="stage-badge">Setup · oc CLI</div>
-      <div class="stage-title">Install the oc CLI</div>
-      <div class="stage-desc">Get the OpenShift command-line tool on macOS, Windows, or Linux. It's the only local tool the deploy lab needs.</div>
+      <div class="stage-badge">Setup · GitHub CLI</div>
+      <div class="stage-title">Install the GitHub CLI</div>
+      <div class="stage-desc">Get the <code>gh</code> command-line tool on macOS, Windows, or Linux. Lab 7's launch script uses it to set repo secrets, variables, and the production approval gate.</div>
     </div>
 
     <div class="talking-point">
@@ -378,9 +376,9 @@
         <span class="tp-label">What you're installing</span>
       </div>
       <ul class="tp-list">
-        <li><code>oc</code> is the OpenShift CLI. It's a single self-contained binary that behaves identically on macOS, Windows, and Linux, so the commands in the lab work the same everywhere.</li>
-        <li>You do <strong>not</strong> need Docker, Podman, or Java on your laptop for this workshop. Images are built on the cluster, not on your machine, so <code>oc</code> is all you have to install locally.</li>
-        <li>Pick the section for your operating system below, or jump to the <a href="#console" style="color:var(--accent);font-weight:600;">web console download</a>, which is the most reliable path because it always matches your cluster's version.</li>
+        <li><code>gh</code> is GitHub's official CLI. It talks to the GitHub API from your terminal, which is how Lab 7's <code>launch-pipeline.sh</code> sets Actions <strong>secrets and variables</strong>, creates the <strong>production environment</strong>, and watches the run, all without clicking through the web UI.</li>
+        <li>After installing, you authenticate once with <code>gh auth login</code>. The CLI stores its own session, so the launch script never sees or stores your credentials; it just reuses that session.</li>
+        <li>Pick the section for your operating system below, then run <code>gh auth login</code> to finish.</li>
       </ul>
     </div>
 
@@ -392,24 +390,13 @@
       <div class="step-content">
         <div class="step-title">macOS</div>
         <div class="step-body">
-          The simplest path is <a href="https://brew.sh" style="color:var(--accent);font-weight:600;">Homebrew</a>. It installs the right build for your machine automatically, so Apple Silicon (M-series) and Intel Macs both just work with the same command.
-          <pre>brew install openshift-cli
+          The simplest path is <a href="https://brew.sh" style="color:var(--accent);font-weight:600;">Homebrew</a>. It installs the right build for Apple Silicon (M-series) or Intel automatically.
+          <pre>brew install gh
 
 <span class="c"># confirm it's on your PATH</span>
-oc version --client</pre>
-          <strong>Without Homebrew.</strong> Download the macOS archive from the OpenShift mirror, unpack it, and move <code>oc</code> onto your PATH.
-          <pre><span class="c"># Apple Silicon: use the -arm64 archive. Intel: use the plain mac archive.</span>
-curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-mac-arm64.tar.gz
-tar xzf openshift-client-mac-arm64.tar.gz
-sudo mv oc kubectl /usr/local/bin/
-oc version --client</pre>
-          <div class="stage-note">
-            <div class="note-header">
-              <span class="note-icon">📝</span>
-              <span class="note-label">Note</span>
-            </div>
-            On a Mac, the first time you run a downloaded binary you may need to approve it under <strong>System Settings &gt; Privacy &amp; Security</strong>. Homebrew installs avoid this prompt.
-          </div>
+gh --version</pre>
+          <strong>With MacPorts.</strong> If you use MacPorts instead:
+          <pre>sudo port install gh</pre>
         </div>
       </div>
     </div>
@@ -420,21 +407,15 @@ oc version --client</pre>
       <div class="step-content">
         <div class="step-title">Windows</div>
         <div class="step-body">
-          Download the Windows zip from the mirror, extract it, and add the folder that contains <code>oc.exe</code> to your PATH. Once it's on the PATH, <code>oc</code> works in both PowerShell and Command Prompt.
-          <pre><span class="c"># 1. Download this file in a browser:</span>
-<span class="c">#    https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-windows.zip</span>
-<span class="c"># 2. Extract it, e.g. to C:\oc</span>
-<span class="c"># 3. Add C:\oc to your PATH:</span>
-<span class="c">#    Start menu -> "Edit the system environment variables"</span>
-<span class="c">#    -> Environment Variables -> select "Path" -> Edit -> New -> C:\oc -> OK</span>
-<span class="c"># 4. Open a NEW terminal so the PATH change takes effect, then:</span>
-oc version --client</pre>
-          <strong>With a package manager.</strong> If you already use Scoop or Chocolatey, you can let it handle the download and PATH for you.
+          Use a package manager, or download the installer. With WinGet (built into Windows 11):
+          <pre>winget install --id GitHub.cli</pre>
+          <strong>With Scoop or Chocolatey:</strong>
           <pre><span class="c"># Scoop</span>
-scoop install openshift-cli
+scoop install gh
 
 <span class="c"># Chocolatey (run in an elevated prompt)</span>
-choco install openshift-cli</pre>
+choco install gh</pre>
+          <strong>Or the installer.</strong> Download the latest <code>.msi</code> from <a href="https://github.com/cli/cli/releases/latest" target="_blank" style="color:var(--accent);font-weight:600;">the gh releases page</a>, run it, then open a <strong>new</strong> terminal and run <code>gh --version</code>.
         </div>
       </div>
     </div>
@@ -445,92 +426,59 @@ choco install openshift-cli</pre>
       <div class="step-content">
         <div class="step-title">Linux</div>
         <div class="step-body">
-          Download the Linux tarball from the mirror, unpack it, and move <code>oc</code> into a directory on your PATH such as <code>/usr/local/bin</code>.
-          <pre>curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz
-tar xvf openshift-client-linux.tar.gz
-sudo mv oc kubectl /usr/local/bin/
-oc version --client</pre>
+          On Debian/Ubuntu, add the official GitHub CLI apt repository so you also get future updates through <code>apt</code>.
+          <pre>(type -p wget >/dev/null || sudo apt update && sudo apt install wget -y)
+sudo mkdir -p -m 755 /etc/apt/keyrings
+wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null
+sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] \
+  https://cli.github.com/packages stable main" \
+  | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+sudo apt update && sudo apt install gh -y
+gh --version</pre>
           <div class="stage-note">
             <div class="note-header">
               <span class="note-icon">📝</span>
               <span class="note-label">Note</span>
             </div>
-            On ARM-based Linux, use the <code>openshift-client-linux-arm64.tar.gz</code> archive from the same mirror directory instead.
+            On Fedora/RHEL use <code>sudo dnf install gh</code> (or <code>sudo dnf install 'dnf-command(config-manager)'</code> then add the <code>https://cli.github.com/packages/rpm/gh-cli.repo</code> repo first). On Arch, <code>sudo pacman -S github-cli</code>.
           </div>
         </div>
       </div>
     </div>
 
-    <div class="section-label" id="console">Easiest cross-OS path: the web console</div>
+    <div class="section-label">Authenticate</div>
 
-    <!-- Console -->
+    <!-- Auth -->
     <div class="step">
       <div class="step-number">4</div>
       <div class="step-content">
-        <div class="step-title">Download oc from the OpenShift web console</div>
+        <div class="step-title">Log in to GitHub</div>
         <div class="step-body">
-          Every OpenShift web console offers the matching <code>oc</code> download for all operating systems, so you don't have to guess a version. Open the console in a browser, then:
-          <ol style="margin:8px 0 0 18px;padding:0;line-height:1.8;">
-            <li>Click the <strong>?</strong> (Help) icon in the top-right toolbar.</li>
-            <li>Choose <strong>Command line tools</strong>.</li>
-            <li>Download the <code>oc</code> build for your operating system, then unpack it and put it on your PATH exactly as in the sections above.</li>
-          </ol>
+          Confirm the install, then authenticate. <code>gh auth login</code> walks you through an interactive sign-in (it can open a browser or accept a token).
+          <pre>gh --version
+
+<span class="c"># interactive sign-in: choose GitHub.com, HTTPS, and "Login with a web browser"</span>
+gh auth login
+
+<span class="c"># confirm you're signed in</span>
+gh auth status</pre>
           <div class="stage-tip">
             <div class="tip-header">
               <span class="tip-icon">💡</span>
               <span class="tip-label">Tip</span>
             </div>
-            The console's <strong>Command line tools</strong> download always matches your cluster's version, which avoids the occasional client/server version warning you can get from a generic <code>stable</code> download. When in doubt, use this path.
+            When prompted, choose <strong>HTTPS</strong> as the git protocol so pushes use your <code>gh</code> session. Lab 7's launch script also runs <code>gh auth setup-git</code> to wire that up. If you need to push to a repo, make sure your login has access to it.
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-label">Verify and Log In</div>
-
-    <!-- Verify -->
-    <div class="step">
-      <div class="step-number">5</div>
-      <div class="step-content">
-        <div class="step-title">Verify the install</div>
-        <div class="step-body">
-          Confirm <code>oc</code> is on your PATH and runnable. The <code>--client</code> flag prints only the client version, so it works before you've logged in to anything.
-          <pre>oc version --client
-
-<span class="c"># Once you're logged in, plain `oc version` also shows the server version,</span>
-<span class="c"># which is handy for spotting a client/server version mismatch.</span>
-oc version</pre>
-        </div>
-      </div>
-    </div>
-
-    <!-- Log in -->
-    <div class="step">
-      <div class="step-number">6</div>
-      <div class="step-content">
-        <div class="step-title">Log in to the cluster</div>
-        <div class="step-body">
-          Log in with a token and the cluster's API URL. You get both from your instructor, or from the web console: click your name in the top-right, choose <strong>Copy login command</strong>, and it gives you the full <code>oc login</code> line with a fresh token.
-          <pre>oc login --token=&lt;your-token&gt; --server=&lt;cluster_url&gt;
-
-<span class="c"># confirm you're connected and see your current project</span>
-oc whoami
-oc project</pre>
-          <div class="stage-note">
-            <div class="note-header">
-              <span class="note-icon">📝</span>
-              <span class="note-label">Note</span>
-            </div>
-            Tokens are short-lived. If <code>oc</code> later reports that you're not logged in, grab a fresh <strong>Copy login command</strong> from the console and run it again.
-          </div>
-          From here you're ready for the <a href="lab-6-deploy-openshift.html" style="color:var(--accent);font-weight:600;">Deploy to OpenShift</a> lab.
+          From here you're ready for the <a href="lab-7-cicd-pipeline-v2.html" style="color:var(--accent);font-weight:600;">CI/CD Pipeline</a> lab.
         </div>
       </div>
     </div>
 
     <div class="nav-buttons">
       <a href="../index.html" class="nav-btn">↑ Home</a>
-      <a href="lab-6-deploy-openshift.html" class="nav-btn">→ Deploy to OpenShift lab</a>
+      <a href="lab-7-cicd-pipeline-v2.html" class="nav-btn">→ CI/CD Pipeline lab</a>
     </div>
   </div>
   </div>
