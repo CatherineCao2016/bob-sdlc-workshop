@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 5 - Infra as Code | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  /* Original container styles below */
+  .old-container-placeholder {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    flex: 1;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+    
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+  
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .stage-prep {
+    background: rgba(255,85,85,0.08);
+    border: 1px solid rgba(255,85,85,0.25);
+    border-left: 3px solid var(--red);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .output-icon {
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #e6e6e6;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  pre .c { color: #6a9955; }
+
+  .gap-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .gap-table th, .gap-table td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .gap-table thead th {
+    background: var(--surface2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .gap-table tbody tr:nth-child(even) {
+    background: rgba(0,0,0,0.02);
+  }
+
+  .gap-table code {
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 5 of 10</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar" data-toc></aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 5 · IaC</div>
+      <div class="stage-title">Infra as Code with Skills</div>
+      <div class="stage-desc">Use a HashiCorp Terraform skill to make Bob write better Terraform</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Lab 2 completed</strong>, so you have the <code>payment-app-java17</code> project open in the Bob IDE. If you skipped earlier labs, you can find the Java 17 app <a href="https://github.com/CatherineCao2016/payment-app-java17-starter" target="_blank">here</a>.</li>
+        <li><strong>Bob is in Advanced mode.</strong> Skills require it. We'll also enable auto-approve for Skills so Bob activates them without prompting each time.</li>
+        <li>Terraform CLI installed locally (<code>terraform -version</code>) so we can run <code>fmt</code> and <code>validate</code>. Need it? Follow <a href="install-terraform-cli.html" style="color:var(--accent);font-weight:600;">Install the Terraform CLI</a>.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li>Bob can write Terraform out of the box. But "it runs" is not the same as "it follows the conventions a platform team would accept in review." This lab is a controlled <strong>A/B testing</strong>: we send Bob the <strong>identical prompt twice</strong>, the only difference being a <strong>HashiCorp Terraform skill</strong> loaded on the second run, so any quality jump is attributable to the skill and nothing else.</li>
+        <li>A <strong>skill</strong> is a reusable instruction set that teaches Bob a specialized workflow. We'll drop HashiCorp's official <a href="https://github.com/hashicorp/agent-skills" target="_blank">terraform-style-guide</a> skill into <code>.bob/skills/</code> and let Bob apply the HashiCorp Terraform Style Guide automatically.</li>
+        <li>To keep the diff readable on screen we provision <strong>one small slice</strong>: a single <code>bob-demo</code> namespace with a ResourceQuota and a PostgreSQL Deployment, Service, and PVC. Then we prove it's correct with <code>terraform validate</code>, no cluster and no <code>apply</code> required.</li>
+        <li>To judge the difference objectively, we'll ask Bob to <strong>evaluate the before and after</strong> across concrete <strong>quality dimensions</strong> the skill is meant to improve: file organization, provider pinning, naming, parameterization, and formatting. For a second opinion, a <a href="../referee_eval_results.html" target="_blank">referee evaluation by a frontier model</a> is provided alongside this lab, in case you're curious how an independent judge scored the same two versions.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Establish a baseline, no skill yet</div>
+        <div class="step-body">
+          First, capture what Bob writes with <strong>no extra guidance</strong>. Create and send Bob the prompt below. We save this version off to the side so we can compare against it later.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5a · Baseline Terraform (no skill)</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt0">Write Terraform to provision a single OpenShift namespace for the payment application.
+
+Use the hashicorp/kubernetes provider. Provision:
+- A namespace called bob-demo
+- A ResourceQuota (requests.cpu 2, limits.cpu 4, requests.memory 4Gi, limits.memory 8Gi)
+- A PostgreSQL instance: Deployment (postgres:15, single replica) with liveness and readiness probes (pg_isready), a ClusterIP Service on port 5432, and a 5Gi PersistentVolumeClaim
+
+Save everything under payment-app-java17/infra/terraform-baseline/.
+Mark credentials as sensitive and use placeholder values; do not hardcode secrets.
+Include a .gitignore that excludes Terraform state and the .terraform directory.
+Do not run or apply any Terraform commands.</div>
+        </div>
+
+        <div class="stage-note">
+          <div class="note-header">
+            <span class="note-icon">ℹ️</span>
+            <span class="note-label">Note</span>
+          </div>
+          You may notice Bob reaches for the <code>hashicorp/kubernetes</code> provider even though we deploy to OpenShift. That's expected and correct: OpenShift <em>is</em> a Kubernetes distribution and exposes the standard Kubernetes API, so the kubernetes provider manages every object we use here (Namespace, ResourceQuota, Deployment, Service, PVC, Secret). Sticking to core k8s resources also keeps the Terraform <strong>portable</strong> across any cluster. OpenShift-specific objects (Routes, ImageStreams, SecurityContextConstraints, DeploymentConfigs) would need the OpenShift provider instead, and this lab deliberately uses none of them. The reason we can avoid them: PostgreSQL only has to be reachable by the app <em>inside</em> the same cluster, so an internal-only <code>ClusterIP</code> Service is enough. We never need a Route or Ingress to expose it externally, and a Route is exactly the kind of OpenShift-specific object that would otherwise pull us off the kubernetes provider.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Notice what's missing</div>
+        <div class="step-body">
+          Open <code>payment-app-java17/infra/terraform-baseline/</code> and skim it with a reviewer's eye. Typical gaps in an unguided generation:
+        </div>
+        <table class="gap-table">
+          <thead>
+            <tr>
+              <th>What to review</th>
+              <th>Gap in the baseline</th>
+              <th>Best practice (HashiCorp Style Guide)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Provider / version layout</strong><br><code>main.tf</code></td>
+              <td>The <code>terraform</code> and <code>provider</code> blocks sit in <code>main.tf</code> alongside resources.</td>
+              <td>Put settings and provider config in dedicated <code>terraform.tf</code> / <code>providers.tf</code> files so resources stand alone.</td>
+            </tr>
+            <tr>
+              <td><strong>Provider pinning</strong><br><code>main.tf</code></td>
+              <td>Pinned to older releases (<code>kubernetes ~> 2.23</code>, Terraform <code>&gt;= 1.0</code>).</td>
+              <td>Pin to current versions with the pessimistic operator (<code>~></code>) so you get patches without surprise majors.</td>
+            </tr>
+            <tr>
+              <td><strong>Resource naming</strong><br><code>postgresql.tf</code></td>
+              <td>Inconsistent: the PVC is <code>postgres_pvc</code> while the deployment and service are just <code>postgres</code>, repeating the type in one but not the others.</td>
+              <td>Use a consistent noun and do not repeat the resource type in the name (Terraform already namespaces by type). Name all three <code>postgresql</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Parameterization</strong><br><code>resource-quota.tf</code></td>
+              <td>Quota CPU/memory values hardcoded in the resource.</td>
+              <td>Lift environment-varying values into input <code>variable</code>s with defaults and reference them via <code>var.*</code> (e.g. <code>resource_quota_cpu_limits</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Formatting</strong><br><code>main.tf</code>, <code>namespace.tf</code>, <code>postgresql.tf</code></td>
+              <td>Not <code>fmt</code>-clean (trailing whitespace in nested blocks).</td>
+              <td>Keep code canonically formatted; <code>terraform fmt</code> should produce no diff. Use <code>fmt -check -diff</code> to see where.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="stage-note" style="margin-top:14px;">
+          <div class="note-header">
+            <span class="note-icon">💡</span>
+            <span class="note-label">Tip</span>
+          </div>
+          The baseline is not broken: its variables are already typed and described, and it passes <code>terraform validate</code> (the command that checks the configuration is syntactically valid and internally consistent, without contacting any cluster). The skill we use in this lab, HashiCorp's <code>terraform-style-guide</code> (one of several Terraform skills in the <a href="https://github.com/hashicorp/agent-skills" target="_blank">hashicorp/agent-skills</a> repo), focuses on <strong>style and structure</strong>, not basic correctness, so that's where the differences will show.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Install the HashiCorp Terraform skill</div>
+        <div class="step-body">
+          Skills live in <code>.bob/skills/</code> (project-level) or <code>~/.bob/skills/</code> (global). We'll drop HashiCorp's <code>terraform-style-guide</code> skill into the project so it travels with the repo. From a project root, run the following commands in a terminal:
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Terminal · Add the skill to .bob/skills/</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt1"># From the payment-app-java17 project root
+mkdir -p .bob/skills
+
+# Clone HashiCorp's agent-skills and copy the Terraform style-guide skill in
+git clone --depth 1 https://github.com/hashicorp/agent-skills /tmp/hashicorp-agent-skills
+cp -R /tmp/hashicorp-agent-skills/terraform/code-generation/skills/terraform-style-guide \
+      .bob/skills/terraform-style-guide
+
+# Confirm the skill is in place (must contain SKILL.md)
+ls .bob/skills/terraform-style-guide</div>
+        </div>
+
+        <div class="step-body" style="margin-top:12px;">
+          A skill is just a folder with a <code>SKILL.md</code> (YAML front matter with <code>name</code> and <code>description</code>, then the instructions) plus any supporting files. Bob reads the description to decide when it applies.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Regenerate the same Terraform, with the skill</div>
+        <div class="step-body">
+          First, confirm Bob is in <strong>Advanced mode</strong> (the selector left of the chat input, or <code>/advanced</code>); activating skills requires Advanced mode. Then ask for the <strong>exact same infrastructure</strong>, this time writing into <code>terraform/</code>. The prompt below is <strong>identical to the baseline</strong> except for one line at the top: <code>Use the terraform-style-guide skill.</code> That one difference is the whole experiment. Create and send Bob the prompt below.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5b · Skilled Terraform (style guide applied)</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt2">Use the terraform-style-guide skill.
+
+Write Terraform to provision a single OpenShift namespace for the payment application.
+
+Use the hashicorp/kubernetes provider. Provision:
+- A namespace called bob-demo
+- A ResourceQuota (requests.cpu 2, limits.cpu 4, requests.memory 4Gi, limits.memory 8Gi)
+- A PostgreSQL instance: Deployment (postgres:15, single replica) with liveness and readiness probes (pg_isready), a ClusterIP Service on port 5432, and a 5Gi PersistentVolumeClaim
+
+Save everything under payment-app-java17/infra/terraform/.
+Mark credentials as sensitive and use placeholder values; do not hardcode secrets.
+Include a .gitignore that excludes Terraform state and the .terraform directory.
+Do not run or apply any Terraform commands.</div>
+        </div>
+
+        <div class="stage-note">
+          <div class="note-header">
+            <span class="note-icon">📌</span>
+            <span class="note-label">Modes refresher</span>
+          </div>
+          Activating skills requires <strong>Advanced mode</strong>. Need a refresher on Bob's modes? See the modes spotlight in <a href="lab-1-build-app.html">Lab 1</a>.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <div class="step-content">
+        <div class="step-title">Diff the two versions with Bob</div>
+        <div class="step-body">
+          Let Bob narrate its own improvement. Ask it to compare the baseline against the skilled version and call out exactly what the style guide changed.
+        </div>
+
+        <div class="prompt-card" style="margin-top:14px;">
+          <div class="prompt-header" onclick="togglePrompt(this)">
+            <span class="prompt-label">Prompt 5c · Compare baseline vs. skilled</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt3')">COPY</button>
+              <span class="prompt-toggle">▼</span>
+            </div>
+          </div>
+          <div class="prompt-body" id="prompt3">Compare payment-app-java17/infra/terraform-baseline/ with payment-app-java17/infra/terraform/.
+
+Both directories were generated from the same prompt; the only difference is that terraform/ was generated with the HashiCorp terraform-style-guide skill loaded.
+
+Produce a short table covering: file organization, provider version pinning, variable typing and validation, naming conventions, and formatting. For each row, say which version follows the HashiCorp Terraform Style Guide and why it matters in code review. Note separately which requirements (health probes, sensitive credentials, .gitignore) both versions satisfied, since those were specified in the prompt.
+
+Write the table and your assessment to payment-app-java17/infra/skill-comparison.md.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-number">6</div>
+      <div class="step-content">
+        <div class="step-title">Review the comparison</div>
+        <div class="step-body">
+          Open <code>payment-app-java17/infra/skill-comparison.md</code>, the file Bob just wrote, and read its table. This is Bob grading its own before and after, so read it the way you'd read any self-assessment: useful, but worth a second opinion.
+        </div>
+        <div class="step-body" style="margin-top:12px;">
+          For a second opinion, we leveraged an independent frontier model as referee to assess the same two directories, with every claim checked against the files and the CLI results reproduced. You can find the result <a href="../referee_eval_results.html" target="_blank">here</a>.
+        </div>
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">🚀</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          The honest takeaway is in both reports: the skill clearly wins on <strong>style and structure</strong> (formatting, file layout, pinning, naming, parameterization), but it does not guarantee operational completeness with this one skill alone. See the <a href="#going-further"><strong>Get More From Agents</strong> tip under <strong>Going Further</strong></a> below for how to push the first generation closer to production-ready.
+          <br><br>
+          <strong>Note:</strong> your generated artifacts may vary from these reports. Bob is non-deterministic, so the same prompt can yield different file names, structure, and which operational details it includes from run to run. So don't expect an exact match; instead read for the <strong>dimensions</strong> (file layout, pinning, naming, formatting) rather than the literal values.
+          <br><br>
+          To confirm <em>your own</em> output holds up, validate it without touching a cluster:
+<pre>cd payment-app-java17/infra/terraform
+
+<span class="c"># proves the code is canonically formatted</span>
+terraform fmt -check -recursive
+
+<span class="c"># download providers only, no backend / no cluster</span>
+terraform init -backend=false
+
+<span class="c"># check syntax and provider schemas, offline</span>
+terraform validate</pre>
+          Expect <code>Success! The configuration is valid.</code> Do <strong>not</strong> run <code>terraform plan</code> or <code>terraform apply</code>; those reach for a live cluster. Run the same commands against <code>terraform-baseline/</code> for contrast: it also passes <code>validate</code> (both are valid HCL), but typically <strong>fails <code>fmt -check</code></strong>, which is exactly the distinction the skill makes.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" id="going-further">Going Further · Production-Ready on the First Pass</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🚀</span>
+        <span class="tp-label">TIP · GET MORE FROM AGENTS</span>
+      </div>
+      <div class="step-body" style="margin-bottom:12px;">
+        A single skill raises the floor on quality, but it won't cover everything, so you may still spot some operational gaps. The fix is not to babysit every generation, it's to <strong>teach an agent your standards once</strong> so its next first draft already clears them.
+      </div>
+      <ul class="tp-list">
+        <li><strong>Encode your standards, not just style.</strong> Pair a style skill with your own skill that bakes in your team's conventions and must-haves, so the agent applies them automatically instead of being reminded each time.</li>
+        <li><strong>Close the loop after every review.</strong> When a review catches a gap, add it to the skill so the agent doesn't repeat the mistake. The skill becomes a living, version-controlled checklist your whole team shares.</li>
+        <li><strong>Make acceptance criteria machine-checkable.</strong> Tell the agent to run your formatters, validators, linters, tests, and scans, and to fix whatever they flag <em>before</em> declaring the job done. An agent produces stronger first drafts when "done" is an explicit check it can run and verify itself, rather than a subjective sense that the output looks finished.</li>
+        <li><strong>Stack focused skills.</strong> Keep each skill small and single-purpose; the agent applies whichever are relevant, and small skills are far easier to review and maintain than one giant prompt.</li>
+        <li><strong>Give the skill a reference file.</strong> Drop a checklist or examples file next to the skill with your golden patterns and anti-patterns; the agent reads it to self-check instead of relying on the conversation.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>You ran a <strong>controlled A/B test</strong>: the same prompt twice, with the only difference being a <strong>HashiCorp Terraform skill</strong> loaded on the second run, so any quality change is attributable to the skill alone.</li>
+        <li>You installed that skill by dropping it into <code>.bob/skills/</code>, the same way any team can share a reusable workflow with Bob, and ran it in <strong>Advanced mode</strong>, the mode that allows skills to activate.</li>
+        <li>You watched the skill apply the <strong>HashiCorp Terraform Style Guide</strong> without being told to: dedicated provider/version files, current pinned providers, parameterized values, consistent naming, and <code>fmt</code>-clean output.</li>
+        <li>You judged the difference on concrete <strong>quality dimensions</strong>, comparing Bob's own assessment against an independent <a href="../referee_eval_results.html" target="_blank">referee evaluation</a>, and verified your output offline with <code>fmt -check</code> and <code>validate</code>, no cluster required.</li>
+        <li>The takeaway: <strong>a skill reliably lifts style and structure</strong>, but a single skill won't guarantee operational completeness, so a human review stays in the loop. To push the first draft further, you <strong>teach an agent your standards once</strong> by encoding them in skills.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="lab-4-security-scanning.html" class="nav-btn">← Previous Lab</a>
+      <a href="lab-6-deploy-openshift.html" class="nav-btn">Next: Lab 6 →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+  <script src="../assets/toc.js"></script>
+</body>
+</html>

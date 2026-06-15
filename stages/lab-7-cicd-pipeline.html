@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 7 - CI/CD Pipeline | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .meta span { color: #000000; }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+
+  /* LAYOUT */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 51px;
+    height: calc(100vh - 51px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+  }
+
+  .toc-item {
+    margin-bottom: 2px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .toc-link.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 24px;
+  }
+
+  .toc-label {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .toc-optional {
+    opacity: 0.6;
+    font-size: 11px;
+  }
+
+  /* CONTENT */
+  .container {flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon {
+    font-size: 16px;
+  }
+
+  .tp-label {
+
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .tp-list.tp-check li::before {
+    content: "✓";
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .prompt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .prompt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .prompt-body {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #495057;
+    padding: 14px;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.02);
+    display: none;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .prompt-body.visible {
+    display: block;
+  }
+
+  .prompt-toggle {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .prompt-toggle.open {
+    transform: rotate(180deg);
+  }
+
+  .copy-btn {
+    padding: 4px 10px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent2);
+  }
+
+
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header {
+    border-bottom-color: rgba(255,140,0,0.2);
+  }
+
+  .note-icon, .tip-icon {
+    font-size: 16px;
+  }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label {
+    color: var(--accent2);
+  }
+
+  .tip-label {
+    color: var(--warn);
+  }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .output-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .output-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .output-icon {
+    color: #000000;
+    flex-shrink: 0;
+  }
+
+  .substeps {
+    margin: 10px 0 0 18px;
+    padding: 0;
+    line-height: 1.7;
+  }
+
+  .substeps > li {
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Lab 7</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar" data-toc></aside>
+
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Lab 7 · Pipeline</div>
+      <div class="stage-title">CI/CD Pipeline</div>
+      <div class="stage-desc">Automate the manual deploy from Lab 6: CI on every commit, auto-deploy to staging, manual approval to promote to production</div>
+    </div>
+
+    <div class="section-label">Prerequisites</div>
+    <div class="stage-note">
+      <div class="note-header">
+        <span class="note-icon">✅</span>
+        <span class="note-label">Before You Start</span>
+      </div>
+      <ol style="margin:4px 0 0 18px;padding:0;line-height:1.8;">
+        <li><strong>Open the <code>payment-app-java17</code> folder as the project in Bob.</strong> For this lab that folder is the <strong>git repository root</strong>, so the workflow lives at its root (<code>.github/workflows/ci-cd.yml</code>) and build paths are repo-relative. Its <code>origin</code> remote should point at a <strong>GitHub repository you can push to</strong> (a fork is fine). Have your <strong>assigned namespace suffix</strong> ready (for example <code>bob-n</code>). Don't have a working Java 17 app from an earlier lab? Get the starter here: <a href="https://github.com/CatherineCao2016/payment-app-java17-starter" style="color:var(--accent);font-weight:600;">payment-app-java17 starter</a>.</li>
+        <li>The <strong><code>gh</code> CLI</strong> installed and authenticated (<code>gh auth login</code>), with permission to set Actions secrets, variables, and environments on that repo. Need it? See <a href="install-gh-cli.html" style="color:var(--accent);font-weight:600;">Install the GitHub CLI</a>.</li>
+        <li>The <strong><code>oc</code> CLI</strong> logged in (<code>oc login --token=&lt;your-token&gt; --server=&lt;cluster_url&gt;</code>) so the launch script can read your cluster URL and token. No Docker or Java needed; the image builds on the cluster. Need <code>oc</code>? See <a href="install-oc-cli.html" style="color:var(--accent);font-weight:600;">Install the oc CLI</a>.</li>
+      </ol>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">OVERVIEW</span>
+      </div>
+      <ul class="tp-list">
+        <li>Lab 6 deploys the app to OpenShift by hand to validate the path; this lab automates that flow. We use <strong>GitHub Actions</strong> here, but Bob can generate the equivalent for Jenkins, GitLab CI, Azure DevOps, or Tekton; the concepts carry over regardless of the tool.</li>
+        <li>The pipeline follows industry-standard practice: <strong>CI runs automatically</strong> on every commit (build, test, scan). <strong>CD auto-promotes to staging</strong> so you can validate the live app. Only when someone <strong>explicitly approves</strong> does it touch production. That human approval gate is the balance between developer speed and operational control, and in regulated industries it is often a compliance requirement.</li>
+        <li>Staging and production are <strong>two namespaces that are yours alone</strong> on the shared cluster: <code>deploy-test-&lt;suffix&gt;</code> (staging) and <code>deploy-prod-&lt;suffix&gt;</code> (production), both created by the pipeline if they don't already exist. The image is <strong>built once on the cluster</strong>, validated in staging, then <strong>promoted</strong> to production as the exact same artifact, never rebuilt.</li>
+        <li>You generate the workflow, then ask Bob to <strong>configure the GitHub repo and hand you a single <code>launch-pipeline.sh</code> script</strong>. Running it sets the repo's secrets and variable, creates the production approval gate, and pushes the must-have files, all in one go. Then you <strong>watch the run live</strong>, CI, the staging deploy, and the production approval gate, and approve it to promote.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Step-by-Step</div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">Ask Bob to generate the CI/CD workflow</div>
+        <div class="step-body">
+          As in the earlier labs, write the prompt as a Markdown file in the workspace, then hand that file to Bob. It describes the full pipeline: CI on every commit, an automatic deploy to staging, and a manual-approval gate before production, all built with an on-cluster <code>oc</code> build. Everything lands in a single workflow file, <code>.github/workflows/ci-cd.yml</code>.
+          <ol class="substeps">
+            <li><strong>Create the prompt file.</strong> In the Explorer panel, create a <strong>New File</strong> named <code>cicd-pipeline.md</code>, paste the prompt below into it, and save (<code>⌘S</code> / <code>Ctrl+S</code>).
+              <div class="prompt-card" style="margin-top:12px;">
+                <div class="prompt-header" onclick="togglePrompt(this)">
+                  <span class="prompt-label">Prompt · CI/CD Workflow (staging → prod)</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt0')">COPY</button>
+                    <span class="prompt-toggle">▼</span>
+                  </div>
+                </div>
+                <div class="prompt-body" id="prompt0">Before giving me the workflow, ask me for my unique namespace suffix and wait for my answer. Use it only to understand the naming below; in the committed workflow, read the suffix from the NAMESPACE_SUFFIX variable rather than hardcoding my literal value (see the IMPORTANT note further down). The two namespaces are deploy-test-&lt;suffix&gt; (staging) and deploy-prod-&lt;suffix&gt; (production).
+
+Generate a GitHub Actions CI/CD workflow for this payment app. This repository's root is the app itself (a Maven project with a Dockerfile at the root), so put the workflow at .github/workflows/ci-cd.yml and use repo-relative paths (build from ., not from a subfolder). The app is a stateless Spring Boot service that listens on container port 8081 and is exposed via an edge (HTTPS) route named payment-app. We deploy to a shared OpenShift cluster, into two namespaces that are mine alone:
+- Staging: deploy-test-&lt;suffix&gt; (create it if it does not exist)
+- Production: deploy-prod-&lt;suffix&gt; (create it if it does not exist)
+
+Build the image ON THE CLUSTER with oc (binary Docker-strategy build) — do NOT build with Docker or Podman on the GitHub runner, so no container engine is needed on the runner. Authenticate to the cluster from the runner with:
+  oc login --token="${{ secrets.OPENSHIFT_TOKEN }}" --server="${{ secrets.OPENSHIFT_SERVER }}"
+
+Use GitHub Secrets for sensitive values (OPENSHIFT_SERVER, OPENSHIFT_TOKEN) and a GitHub Variable for non-sensitive config (NAMESPACE_SUFFIX). Variables are available in all workflow contexts including environment.url; secrets are not. Never hardcode credentials. The only secrets are OPENSHIFT_SERVER and OPENSHIFT_TOKEN — do not introduce any other secret (such as a cluster apps domain). Set each environment's url from the route the job retrieves at runtime (a step output via oc get route), not from a separate domain secret.
+
+IMPORTANT: derive the namespace names from the NAMESPACE_SUFFIX variable in the workflow itself — for example deploy-test-${{ vars.NAMESPACE_SUFFIX }} and deploy-prod-${{ vars.NAMESPACE_SUFFIX }}. Do NOT bake my literal suffix into the file; asking me for the suffix is only so you understand the naming, the committed workflow must read it from the variable so a different suffix just works.
+
+CI (runs on every PR and push to main):
+1. Checkout, set up JDK 17, build with Maven from the repository root
+2. Run JUnit tests; skip if the commit message contains [skip checks]
+3. Run OWASP dependency-check (fail on CVSS >= 7); skip if [skip checks]
+4. Run Semgrep SAST scan; skip if [skip checks]
+
+   IMPORTANT: the skippable quality-gate jobs (test, owasp, semgrep) must NOT be in the
+   'needs' array of the build or deploy jobs. Only the Maven build job should be a
+   dependency. A skipped job listed in 'needs' makes all downstream jobs skip regardless
+   of their own 'if' conditions.
+
+Build on the cluster + push to staging (on push to main, after CI):
+5. oc login (as above), create deploy-test-&lt;suffix&gt; if it does not exist, then build the image on the cluster from the repo and tag it with the git SHA:
+   - delete any existing BuildConfig AND ImageStream for payment-app first (suppress not-found), so re-runs do not fail with "already exists"
+   - oc new-build --name=payment-app --strategy=docker --binary --to=payment-app:${GITHUB_SHA} -n deploy-test-&lt;suffix&gt;   (create if missing)
+   - oc start-build payment-app --from-dir=. --follow -n deploy-test-&lt;suffix&gt;
+   - verify the ImageStream actually received the ${GITHUB_SHA} tag; if empty, fail fast and print the build logs (the build failed before pushing)
+
+CD Staging (automatic, after the build):
+6. Deploy the freshly built image to deploy-test-&lt;suffix&gt;: oc new-app on first run, otherwise update the deployment's image to payment-app:${GITHUB_SHA}
+7. Ensure the Service targets port 8081 (not the oc new-app default of 8080); patch it if needed, or the route returns 503 with empty endpoints
+8. Ensure an edge (HTTPS) route named payment-app exists:
+   oc create route edge payment-app --service=payment-app --port=8081 --insecure-policy=Redirect -n deploy-test-&lt;suffix&gt;   (create if missing)
+9. Wait for rollout, then explicitly wait for pod readiness:
+   oc wait --for=condition=ready pod -l deployment=payment-app -n deploy-test-&lt;suffix&gt; --timeout=2m
+10. Add a short grace period for route propagation, then read the route URL:
+    oc get route payment-app -n deploy-test-&lt;suffix&gt; -o jsonpath='https://{.spec.host}'
+11. Run a smoke test against the https route: GET the Spring Boot Actuator health endpoint at /actuator/health and require HTTP 200 (the body reports {"status":"UP"}). Do not invent a business endpoint or payload; the app's real APIs live under /api/payments, but health is the reliable readiness check, so use /actuator/health for the smoke test.
+
+CD Production (runs only after MANUAL approval):
+12. Gate this job behind a GitHub Environment named "production" with a required reviewer, so it pauses for human approval before anything runs.
+13. Create deploy-prod-&lt;suffix&gt; if it does not exist.
+14. Promote the EXACT image validated in staging — never rebuild. Use oc tag to copy the image across namespaces on the same cluster:
+    oc tag deploy-test-&lt;suffix&gt;/payment-app:${GITHUB_SHA} deploy-prod-&lt;suffix&gt;/payment-app:${GITHUB_SHA}
+15. Deploy the promoted image to deploy-prod-&lt;suffix&gt; with a rolling update (maxUnavailable: 1), Service on 8081, and an edge (HTTPS) route named payment-app
+16. Wait for readiness and confirm the prod route serves traffic the same way: GET /actuator/health and require HTTP 200. Print the production https URL.
+
+Same OPENSHIFT_SERVER and OPENSHIFT_TOKEN are used for both namespaces.
+All in a single workflow file: .github/workflows/ci-cd.yml
+
+Just generate the workflow file for now; a later step configures the repo and launches it.
+
+## Common Gotchas (build in defenses for these)
+- Internal registry must be Ready before any build, or the build fails with a misleading InvalidOutputReference. Add a preflight check and fail fast with a clear message if the registry is not Ready or a build cannot push.
+- Idempotent builds: delete the BuildConfig AND the ImageStream before oc new-build (suppress not-found), or re-runs fail with "already exists".
+- Service port must be 8081 (the Dockerfile's EXPOSE), not the oc new-app default of 8080.
+- Use an edge route with --insecure-policy=Redirect, not oc expose svc; HTTP-only routes return 503 in browsers.
+- Production promotes the same ${GITHUB_SHA} image via oc tag; it must never rebuild.</div>
+              </div>
+            </li>
+            <li><strong>Hand it to Bob.</strong> In the Bob chat panel, make sure you're in <strong>Code</strong> mode, then add <code>cicd-pipeline.md</code> as context with <code>@</code> → <strong>Add File</strong> and send the message. Bob will ask for your namespace suffix first, then generate <code>.github/workflows/ci-cd.yml</code>.
+              <div class="stage-tip">
+                <div class="tip-header">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-label">How to structure your spec file</span>
+                </div>
+                The more your spec pins down <strong>what good output looks like</strong>, the <strong>constraints it must hold to</strong>, and the <strong>failure modes to avoid</strong>, the less the agent has to guess. The gotchas section above is doing real work: it names the issues that commonly bite an on-cluster build (registry readiness, idempotent builds, the 8081 port, the edge route), so the pipeline gets them right the first time instead of rediscovering them in CI.
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Walk through the pipeline structure</div>
+        <div class="step-body">
+          Open <code>.github/workflows/ci-cd.yml</code> and notice the three distinct stages: <strong>CI</strong> (build, test, scan), <strong>CD Staging</strong> (on-cluster build, deploy to <code>deploy-test-&lt;suffix&gt;</code>, smoke test), and <strong>CD Production</strong> (manual approval, then <code>oc tag</code> promotion into <code>deploy-prod-&lt;suffix&gt;</code> and a rolling deploy).<br><br>
+          Pay attention to the <strong>promotion pattern</strong>: production never rebuilds the image. It promotes the exact same artifact that passed staging, identified by the git SHA, with <code>oc tag</code> moving it from your staging namespace to your prod namespace on the same cluster. Same SHA, same bits. This is the industry standard and eliminates an entire class of "works in staging, breaks in prod" bugs, because what you tested is byte-for-byte what you ship.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Configure the repo and launch the pipeline</div>
+        <div class="step-body">
+          Rather than click through GitHub's settings by hand, ask Bob to wire everything up and hand you a single script that pushes the files and triggers the run. Send the prompt below in <strong>Code</strong> mode; Bob uses the <code>gh</code> and <code>oc</code> CLIs you're already logged in to.
+          <div class="prompt-card" style="margin-top:12px;">
+            <div class="prompt-header" onclick="togglePrompt(this)">
+              <span class="prompt-label">Prompt · Configure + launch script</span>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt1')">COPY</button>
+                <span class="prompt-toggle">▼</span>
+              </div>
+            </div>
+            <div class="prompt-body" id="prompt1">I want to actually run this pipeline. First, ask me for (1) my namespace suffix and (2) the target GitHub repository as owner/name, and wait for my answers.
+
+Assume only that the gh CLI is installed and I'm authenticated (gh auth login done) and oc is logged in to the cluster. Do NOT assume this folder is already a git repository or that an 'origin' remote exists; the script must set that up.
+
+Generate one idempotent script named launch-pipeline.sh that, when I run it:
+1. Reads my OpenShift server and token from oc (oc whoami --show-server and oc whoami -t) and sets them as the GitHub repo secrets OPENSHIFT_SERVER and OPENSHIFT_TOKEN using `gh secret set`.
+2. Sets the GitHub repo variable NAMESPACE_SUFFIX to my suffix using `gh variable set`.
+3. Creates (or updates) a GitHub Environment named "production" with me as a required reviewer, so the production job pauses for approval. Get my numeric user id with `gh api user --jq .id`, then PUT repos/&lt;owner&gt;/&lt;repo&gt;/environments/production with a JSON body whose "reviewers" is an ARRAY, piped via `gh api --method PUT ... --input -` with a here-doc like {"reviewers":[{"type":"User","id":&lt;my-id&gt;}]}. Do NOT build the reviewers field with repeated `-F reviewers[]=...` flags — gh turns those into an object, not an array, and GitHub rejects it with HTTP 422.
+4. Prepares the git repository: if this folder is not already a git repo, run `git init` and `git branch -M main`; run `gh auth setup-git` so git can push over HTTPS using my gh login; and ensure an 'origin' remote points at https://github.com/&lt;owner&gt;/&lt;repo&gt;.git (add it if missing, update it if it points elsewhere).
+5. Stages, commits, and pushes every file the pipeline needs to origin main to trigger the run: the .github/workflows/ci-cd.yml workflow plus the application sources, Dockerfile, and pom.xml at the repo root, and any file the workflow's own steps reference (for example an owasp-suppressions.xml if the OWASP job points at one) when it exists. Use a commit message that contains [skip checks] by default. Handle "nothing to commit" gracefully (don't fail if there are no changes).
+6. Prints the Actions run URL and then streams the run with `gh run watch` so I can follow CI, the staging deploy, and the production approval gate.
+
+Requirements:
+- Idempotent and re-runnable: update existing secrets / variable / environment / remote instead of erroring, and don't fail if there is nothing new to commit.
+- Never print or commit my token; pass it to gh via stdin or a shell variable, never as a literal written into the repo.
+- Add a header comment listing the assumptions (gh authenticated, oc logged in) and echo each step so I can follow along.
+- Do not run any oc build or deploy yourself; the GitHub Actions workflow does all the cluster work.</div>
+          </div>
+          The script reads your <strong>existing</strong> GitHub and cluster sessions, so sign in to both first (you enter your own credentials; the script never sees them):
+          <div class="prompt-card" style="margin-top:12px;">
+            <div class="prompt-header" onclick="togglePrompt(this)">
+              <span class="prompt-label">Terminal · Sign in to GitHub and the cluster</span>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt2')">COPY</button>
+                <span class="prompt-toggle">▼</span>
+              </div>
+            </div>
+            <div class="prompt-body" id="prompt2"># authenticate the GitHub CLI (opens a browser to sign in)
+gh auth login
+
+# log in to the OpenShift cluster (get the token and server from your instructor
+# or the console's "Copy login command")
+oc login --token=&lt;your-token&gt; --server=&lt;cluster_url&gt;</div>
+          </div>
+          Then, when Bob has written <code>launch-pipeline.sh</code>, review it and run it from the project root:
+          <div class="prompt-card" style="margin-top:12px;">
+            <div class="prompt-header" onclick="togglePrompt(this)">
+              <span class="prompt-label">Terminal · Push the files and trigger the run</span>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="copy-btn" onclick="event.stopPropagation();copyPrompt('prompt3')">COPY</button>
+                <span class="prompt-toggle">▼</span>
+              </div>
+            </div>
+            <div class="prompt-body" id="prompt3">chmod +x launch-pipeline.sh && ./launch-pipeline.sh</div>
+          </div>
+        </div>
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          You sign in to GitHub and the cluster yourself with <code>gh auth login</code> and <code>oc login</code>; the script only reads those existing sessions, it never stores your token in the repo. The OpenShift token is short-lived, so if a later run fails to authenticate, just re-run the script to refresh the <code>OPENSHIFT_TOKEN</code> secret.
+          <br><br>
+          The script commits with <code>[skip checks]</code> in the message by default. The workflow bypasses the JUnit, OWASP, and Semgrep quality gates whenever the commit message contains <code>[skip checks]</code>, which keeps a workshop run fast (those gates can take several minutes). To run the full gates instead, commit again without <code>[skip checks]</code> in the message.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Observe the run and approve production</div>
+        <div class="step-body">
+          The push triggers the workflow immediately. Follow it in the terminal where <code>gh run watch</code> is streaming, or open the repo's <strong>Actions</strong> tab. You'll see <strong>CI</strong> run, the <strong>staging</strong> deploy land in <code>deploy-test-&lt;suffix&gt;</code> and pass its smoke test, and then the <strong>production</strong> job stop at <strong>Waiting</strong> on its approval gate.<br><br>
+          Approve it from the Actions run page (<strong>Review deployments → production → Approve and deploy</strong>). The production job then promotes the exact staging image with <code>oc tag</code> into <code>deploy-prod-&lt;suffix&gt;</code> and rolls it out. When the run is green, its logs print your production <code>https://</code> URL; open it to confirm the promoted app is live.
+          <video controls preload="metadata" style="width:100%;border-radius:8px;margin:12px 0 4px;">
+            <source src="../assets/videos/cicd-human-approval.mp4" type="video/mp4">
+            Your browser doesn't support embedded video. <a href="../assets/videos/cicd-human-approval.mp4">Download the clip</a>.
+          </video>
+        </div>
+
+        <div class="stage-tip">
+          <div class="tip-header">
+            <span class="tip-icon">💡</span>
+            <span class="tip-label">Tip</span>
+          </div>
+          Remember the skipped gates would normally block a deploy on a failing test or a critical CVE, so a real promotion should run them. If a run fails, work the error with Bob live and fold the fix back into <code>cicd-pipeline.md</code> (or the launch script) so the next run already has it. No repo or cluster handy? The recording above shows a complete run, end to end.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Lab Summary</div>
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">🏆</span>
+        <span class="tp-label">WHAT YOU ACHIEVED</span>
+      </div>
+      <ul class="tp-list tp-check">
+        <li>Bob generated a <strong>complete GitHub Actions pipeline</strong> in a single file: build, JUnit tests, OWASP dependency-check, and Semgrep SAST on every commit, with skippable gates for fast runs.</li>
+        <li>It <strong>builds the image on the cluster</strong> with <code>oc</code> (no Docker or Java on the runner), creates the staging namespace if needed, <strong>auto-deploys to staging</strong> (<code>deploy-test-&lt;suffix&gt;</code>), and smoke-tests the live edge route.</li>
+        <li>Production sits behind a <strong>manual approval gate</strong> and receives the <strong>exact image promoted from staging</strong> via <code>oc tag</code> into <code>deploy-prod-&lt;suffix&gt;</code>.</li>
+        <li>Bob also generated a <strong><code>launch-pipeline.sh</code> script</strong> that configured the repo's secrets, variable, and production approval gate and pushed the must-have files, so a single command put the pipeline live.</li>
+        <li>You <strong>watched the run end to end</strong>: CI, the staging deploy and smoke test, the production job waiting on approval, and, once approved, the <code>oc tag</code> promotion into production.</li>
+        <li>The takeaway: <strong>one spec plus one script turned a manual deploy into a running, enterprise-grade delivery pipeline</strong> that balances developer speed with operational control.</li>
+      </ul>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="lab-6-deploy-openshift.html" class="nav-btn">← Previous Lab</a>
+      <a href="lab-8-day2-sre-ops.html" class="nav-btn">Next: Lab 8 →</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePrompt(header) {
+      const body = header.nextElementSibling;
+      const toggle = header.querySelector('.prompt-toggle');
+      body.classList.toggle('visible');
+      toggle.classList.toggle('open');
+    }
+
+    function copyPrompt(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard!');
+      });
+    }
+
+    // Auto-open first prompt
+    document.addEventListener('DOMContentLoaded', () => {
+      const firstBody = document.querySelector('.prompt-body');
+      const firstToggle = document.querySelector('.prompt-toggle');
+      if (firstBody) {
+        firstBody.classList.add('visible');
+        firstToggle.classList.add('open');
+      }
+    });
+  </script>
+  <script src="../assets/toc.js"></script>
+</body>
+</html>
