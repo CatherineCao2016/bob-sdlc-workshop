@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Install the JDK and Maven | IBM Bob SDLC Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="../assets/theme-toggle.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --surface2: #e9ecef;
+    --border: #dee2e6;
+    --accent: #0066cc;
+    --accent2: #00a896;
+    --warn: #ff8c00;
+    --text: #212529;
+    --muted: #495057;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .home-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+.main-layout { display: flex; flex: 1; position: relative; }
+  .sidebar {
+    width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 0; position: sticky; top: 51px; height: calc(100vh - 51px);
+    overflow-y: auto; flex-shrink: 0;
+  }
+  .sidebar-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); padding: 0 20px 12px;
+    border-bottom: 1px solid var(--border); margin-bottom: 12px;
+  }
+  .toc-list { list-style: none; }
+  .toc-item { margin-bottom: 2px; }
+  .toc-link {
+    display: flex; align-items: center; gap: 10px; padding: 8px 20px;
+    text-decoration: none; color: var(--muted); font-size: 12px;
+    transition: all 0.2s; border-left: 3px solid transparent;
+  }
+  .toc-link:hover { background: var(--surface2); color: var(--text); }
+  .toc-link.active { background: var(--surface2); color: var(--accent); border-left-color: var(--accent); }
+  .toc-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; min-width: 24px; }
+  .toc-label { flex: 1; line-height: 1.4; }
+  .toc-optional { opacity: 0.6; font-size: 11px; }
+  @media (max-width: 768px) { .sidebar { display: none; } }
+  .container {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+  }
+
+  .stage-header {
+    margin-bottom: 30px;
+  }
+
+  .stage-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .stage-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-desc {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 30px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .talking-point {
+    background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(0,168,150,0.03));
+    border: 1px solid rgba(0,102,204,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,102,204,0.2);
+  }
+
+  .tp-icon { font-size: 16px; }
+
+  .tp-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .tp-list { list-style: none; padding-left: 0; }
+
+  .tp-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .tp-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* STEPS */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .step-number {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-content { flex: 1; min-width: 0; }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-top: 4px;
+  }
+
+  .step-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .step-body code {
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #e6e6e6;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  pre .c { color: #6a9955; }
+
+  .stage-note {
+    background: rgba(0,168,150,0.08);
+    border: 1px solid rgba(0,168,150,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .stage-tip {
+    background: rgba(255,140,0,0.08);
+    border: 1px solid rgba(255,140,0,0.3);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .note-header, .tip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,168,150,0.2);
+  }
+
+  .tip-header { border-bottom-color: rgba(255,140,0,0.2); }
+
+  .note-icon, .tip-icon { font-size: 16px; }
+
+  .note-label, .tip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .note-label { color: var(--accent2); }
+  .tip-label { color: var(--warn); }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-btn {
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .nav-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      IBM BOB · SDLC WORKSHOP
+    </div>
+    <div class="meta">
+      <span>Setup</span>
+      <a href="../index.html" class="home-link">↑ HOME</a>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <aside class="sidebar" data-toc></aside>
+    <div class="container">
+    <div class="stage-header">
+      <div class="stage-badge">Setup · JDK &amp; Maven</div>
+      <div class="stage-title">Install the JDK and Maven</div>
+      <div class="stage-desc">Get a <strong>JDK (17 or later)</strong> and <strong>Maven 3.6+</strong> on your PATH so Lab 1 can build and run the payment app. You do not need to install Spring Boot; Maven downloads it automatically on the first build.</div>
+    </div>
+
+    <div class="talking-point">
+      <div class="tp-header">
+        <span class="tp-icon">💬</span>
+        <span class="tp-label">What you're installing</span>
+      </div>
+      <ul class="tp-list">
+        <li>The <strong>JDK</strong> (Java Development Kit) compiles and runs Java code. The workshop app needs <strong>JDK 17 or later</strong>. Any distribution works: Eclipse Temurin, Amazon Corretto, Microsoft Build of OpenJDK, or Oracle JDK.</li>
+        <li><strong>Maven</strong> is the build tool. It compiles the project, resolves dependencies, and starts the app with <code>mvn spring-boot:run</code>. You need <strong>Maven 3.6 or newer</strong>.</li>
+        <li>You do <strong>not</strong> install Spring Boot yourself. It's declared in the project's <code>pom.xml</code>, and Maven downloads it (and everything else) from Maven Central on the first build.</li>
+        <li>Pick the section for your operating system below, then jump to <a href="#verify" style="color:var(--accent);font-weight:600;">Verify your install</a> to confirm both are on your PATH.</li>
+      </ul>
+    </div>
+
+    <div class="section-label">Install by Operating System</div>
+
+    <!-- macOS -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="step-title">macOS</div>
+        <div class="step-body">
+          The simplest path is <a href="https://brew.sh" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Homebrew</a>. Install the Temurin JDK and Maven; Homebrew handles Apple Silicon (M-series) and Intel automatically.
+          <pre>brew install temurin   <span class="c"># Eclipse Temurin JDK (latest LTS)</span>
+brew install maven     <span class="c"># Maven (pulls in a JDK dependency too)</span>
+
+<span class="c"># confirm both are on your PATH</span>
+java -version
+mvn -version</pre>
+          <div class="stage-note">
+            <div class="note-header">
+              <span class="note-icon">📝</span>
+              <span class="note-label">Note</span>
+            </div>
+            To pin a specific Java version, use a versioned cask, e.g. <code>brew install temurin@17</code>. If <code>java -version</code> still shows an old version afterward, set <code>JAVA_HOME</code> with <code>export JAVA_HOME=$(/usr/libexec/java_home -v 17)</code> in your <code>~/.zshrc</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Windows -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <div class="step-title">Windows</div>
+        <div class="step-body">
+          Use a package manager, or download the installers. With WinGet (built into Windows 11):
+          <pre>winget install --id EclipseAdoptium.Temurin.17.JDK
+winget install --id Apache.Maven</pre>
+          <strong>With Scoop or Chocolatey:</strong>
+          <pre><span class="c"># Scoop</span>
+scoop bucket add java
+scoop install temurin17-jdk maven
+
+<span class="c"># Chocolatey (run in an elevated prompt)</span>
+choco install temurin17 maven</pre>
+          <strong>Or the installers.</strong> Download the JDK from <a href="https://adoptium.net/temurin/releases/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">adoptium.net</a> (the <code>.msi</code> sets <code>JAVA_HOME</code> and PATH for you), and Maven from <a href="https://maven.apache.org/download.cgi" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">maven.apache.org</a>.
+          <div class="stage-note">
+            <div class="note-header">
+              <span class="note-icon">📝</span>
+              <span class="note-label">Note</span>
+            </div>
+            After installing, open a <strong>new</strong> terminal (PowerShell or Command Prompt) so it picks up the updated PATH, then run the verification commands below. If you used the Maven <code>.zip</code> manually, add its <code>bin</code> folder to your PATH and set <code>JAVA_HOME</code> to the JDK folder.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Linux -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <div class="step-title">Linux</div>
+        <div class="step-body">
+          On Debian/Ubuntu, install from the package repositories:
+          <pre>sudo apt update
+sudo apt install openjdk-17-jdk maven -y
+
+java -version
+mvn -version</pre>
+          <div class="stage-note">
+            <div class="note-header">
+              <span class="note-icon">📝</span>
+              <span class="note-label">Note</span>
+            </div>
+            On Fedora/RHEL use <code>sudo dnf install java-17-openjdk-devel maven</code>. On Arch, <code>sudo pacman -S jdk17-openjdk maven</code>. Across distros, <a href="https://sdkman.io" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">SDKMAN!</a> is a great way to install and switch between JDK and Maven versions: <code>sdk install java</code> then <code>sdk install maven</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" id="verify">Verify your install</div>
+
+    <!-- Verify -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <div class="step-title">Confirm both are on your PATH</div>
+        <div class="step-body">
+          Run both commands in a terminal. You should see <strong>JDK 17 or later</strong> and <strong>Maven 3.6 or newer</strong>, and the Maven output should report the same Java version it's using.
+          <pre><span class="c"># JDK: look for "17", "21", or higher</span>
+java -version
+
+<span class="c"># Maven: look for "Apache Maven 3.6+" and a matching Java version line</span>
+mvn -version</pre>
+          Typical output looks like:
+          <pre>openjdk version "17.0.10" 2024-01-16
+OpenJDK Runtime Environment Temurin-17.0.10+7 ...
+
+Apache Maven 3.9.6 ...
+Java version: 17.0.10, vendor: Eclipse Adoptium ...</pre>
+          <div class="stage-tip">
+            <div class="tip-header">
+              <span class="tip-icon">💡</span>
+              <span class="tip-label">Tip</span>
+            </div>
+            If a command is "not found," your install isn't on the PATH yet: open a new terminal, or check that <code>JAVA_HOME</code> points at the JDK and that Maven's <code>bin</code> folder is on the PATH. If <code>mvn -version</code> reports an older Java than you expect, fix <code>JAVA_HOME</code> so it points at your JDK 17+ install. Once both commands report the right versions, you're ready to start <a href="lab-1-build-app.html" style="color:var(--accent);font-weight:600;">Lab 1</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="../index.html" class="nav-btn">↑ Home</a>
+      <a href="lab-1-build-app.html" class="nav-btn">→ Lab 1: Build the App</a>
+    </div>
+  </div>
+  </div>
+  <script src="../assets/toc.js"></script>
+</body>
+</html>

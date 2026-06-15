@@ -24,6 +24,7 @@
     { num: "8", label: "Day-2 SRE Ops",            path: "stages/lab-8-day2-sre-ops.html",          badge: "try" },
     { num: "✓", label: "Workshop Complete",   path: "outro.html" },
     { divider: "How-Tos & Setup" },
+    { num: "★", label: "Install JDK & Maven",       path: "stages/install-jdk-maven.html",           optional: true },
     { num: "★", label: "Install the oc CLI",        path: "stages/install-oc-cli.html",              optional: true },
     { num: "★", label: "Install the GitHub CLI",    path: "stages/install-gh-cli.html",              optional: true },
     { num: "★", label: "Install the Terraform CLI", path: "stages/install-terraform-cli.html",       optional: true }
